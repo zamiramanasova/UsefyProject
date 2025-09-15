@@ -1,4 +1,4 @@
-package com.example.usefy;
+package com.example.usefy.controller;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,7 +8,6 @@ public class UsefyApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(UsefyApplication.class, args);
-        System.out.println("Hello World");
     }
 
 }
