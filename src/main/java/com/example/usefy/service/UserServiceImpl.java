@@ -1,5 +1,6 @@
 package com.example.usefy.service;
 
+import com.example.usefy.model.User;
 import com.example.usefy.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
