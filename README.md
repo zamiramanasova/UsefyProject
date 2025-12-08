@@ -1,4 +1,4 @@
-### Built With
+### Build With
 <br>
 <p>
 <a href="https://img.shields.io">
