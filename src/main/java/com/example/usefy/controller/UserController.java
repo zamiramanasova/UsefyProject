@@ -9,7 +9,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-
 public class UserController {
 
     private UserRepository userRepository;
