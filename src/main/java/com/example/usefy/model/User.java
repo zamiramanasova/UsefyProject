@@ -1,23 +1,27 @@
 package com.example.usefy.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Table(name = "userUsefy")
+@Table(name = "users")
+@Getter          // ВАЖНО: именно эта аннотация даёт getUsername(), getPasswordHash()
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Builder
 public class User {
+
     @Id
-    @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String userName;
-    private String password;
-    private boolean enabled;
+
+    @Column(nullable = false, unique = true)
+    private String username;       // → будет getUsername()
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(nullable = false, name = "password_hash")
+    private String passwordHash;   // → будет getPasswordHash()
 }
