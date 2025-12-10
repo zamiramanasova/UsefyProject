@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -16,16 +18,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public User registerUser(String username, String password, String email) {
 
-        if (userRepository.findByUsername(username).isPresent()) {
+        // Проверяем, что логин не занят
+        Optional<User> existing = userRepository.findByUsername(username);
+        if (existing.isPresent()) {
             throw new IllegalArgumentException("Username already exists");
         }
 
+        // Шифруем пароль
+        String hashedPassword = passwordEncoder.encode(password);
+
+        // Создаём сущность
         User user = User.builder()
                 .username(username)
                 .email(email)
-                .passwordHash(passwordEncoder.encode(password))
+                .passwordHash(hashedPassword)
                 .build();
 
+        // Сохраняем и ВОЗВРАЩАЕМ результат
         return userRepository.save(user);
     }
 
