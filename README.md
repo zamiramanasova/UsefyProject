@@ -1,3 +1,5 @@
+[![Build and Test](https://github.com/zamiramanasova/UsefyProject/actions/workflows/ci.yml/badge.svg)](https://github.com/zamiramanasova/UsefyProject/actions/workflows/ci.yml)
+
 ### Build With
 <br>
 <p>
