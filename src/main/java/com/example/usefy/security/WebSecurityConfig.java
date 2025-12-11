@@ -15,35 +15,32 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Для простого учебного REST-API CSRF отключаем
-                .csrf(csrf -> csrf.disable())
-
-                // H2-консоль во фреймах
+                // 1) разрешаем CSRF для форм, но игнорируем REST-эндпоинты и H2
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/auth/**", "/h2-console/**")
+                )
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.sameOrigin())
                 )
 
+                // 2) авторизация запросов
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/",              // главная
-                                "/hello",
-                                "/h2-console/**", // H2
-                                "/api/auth/**",   // НАШИ REST-эндпоинты регистрации/логина
-                                "/css/**",
-                                "/js/**",
-                                "/images/**"
+                                "/", "/hello",
+                                "/register", "/login",
+                                "/h2-console/**",
+                                "/css/**", "/js/**", "/images/**",
+                                "/api/auth/**" // REST эндпоинты разрешаем (т.к. они делают свою проверку)
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
 
-                // Стандартная форма логина (на будущее, если понадобиться веб-логин)
+                // 3) форма логина (стандартная)
                 .formLogin(form -> form
+                        .loginPage("/login") // если нет шаблона, можно убрать эту строку — тогда Spring сделает дефолтную
                         .permitAll()
                 )
-
-                .logout(logout -> logout
-                        .permitAll()
-                );
+                .logout(logout -> logout.permitAll());
 
         return http.build();
     }
