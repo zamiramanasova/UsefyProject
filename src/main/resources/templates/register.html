@@ -8,30 +8,31 @@
 <body>
 <h1>Регистрация</h1>
 
-<form th:action="@{/register}" th:object="${registrationForm}" method="post">
+<form th:action="@{/register}"
+      th:object="${registrationForm}"
+      method="post">
+
+    <input type="hidden"
+           th:name="${_csrf.parameterName}"
+           th:value="${_csrf.token}" />
+
     <div>
         <label>Логин</label><br/>
         <input type="text" th:field="*{username}" />
-        <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" style="color: red;"></div>
+        <div th:errors="*{username}" style="color:red"></div>
     </div>
 
     <div>
         <label>Email</label><br/>
         <input type="email" th:field="*{email}" />
-        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color: red;"></div>
+        <div th:errors="*{email}" style="color:red"></div>
     </div>
 
     <div>
         <label>Пароль</label><br/>
         <input type="password" th:field="*{password}" />
-        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color: red;"></div>
+        <div th:errors="*{password}" style="color:red"></div>
     </div>
 
-    <br/>
     <button type="submit">Зарегистрироваться</button>
 </form>
-
-<br/>
-<a th:href="@{/login}">Уже есть аккаунт? Войти</a>
-</body>
-</html>

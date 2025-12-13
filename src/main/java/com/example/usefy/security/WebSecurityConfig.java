@@ -14,33 +14,47 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
-                // 1) разрешаем CSRF для форм, но игнорируем REST-эндпоинты и H2
+                // 1) CSRF
                 .csrf(csrf -> csrf
+                        // REST и H2 не требуют CSRF
                         .ignoringRequestMatchers("/api/auth/**", "/h2-console/**")
                 )
+
+                // 2) H2 console
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.sameOrigin())
                 )
 
-                // 2) авторизация запросов
+                // 3) Авторизация
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/", "/hello",
-                                "/register", "/login",
-                                "/h2-console/**",
-                                "/css/**", "/js/**", "/images/**",
-                                "/api/auth/**" // REST эндпоинты разрешаем (т.к. они делают свою проверку)
+                                "/",                 // главная
+                                "/hello",
+                                "/register",         // регистрация
+                                "/login",            // логин
+                                "/h2-console/**",    // H2
+                                "/css/**",           // статика
+                                "/js/**",
+                                "/images/**",
+                                "/api/auth/**"       // REST auth
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
 
-                // 3) форма логина (стандартная)
+                // 4) Form Login
                 .formLogin(form -> form
-                        .loginPage("/login") // если нет шаблона, можно убрать эту строку — тогда Spring сделает дефолтную
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/profile", true)
                         .permitAll()
                 )
-                .logout(logout -> logout.permitAll());
+
+                // 5) Logout
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/")
+                        .permitAll()
+                );
 
         return http.build();
     }

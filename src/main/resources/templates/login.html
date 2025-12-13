@@ -1,18 +1,13 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Usefy</title>
-</head>
-<body>
+<form th:action="@{/login}" method="post">
+    <div>
+        <label>Username</label>
+        <input type="text" name="username"/>
+    </div>
 
-<h1>Welcome to Usefy</h1>
-<p>Simple school platform</p>
+    <div>
+        <label>Password</label>
+        <input type="password" name="password"/>
+    </div>
 
-<hr>
-
-<a th:href="@{/register}">Регистрация</a><br><br>
-<a th:href="@{/login}">Вход</a>
-
-</body>
-</html>
+    <button type="submit">Login</button>
+</form>

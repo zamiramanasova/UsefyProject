@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users_usefy")
 @Getter          // ВАЖНО: именно эта аннотация даёт getUsername(), getPasswordHash()
 @Setter
 @NoArgsConstructor
