@@ -16,6 +16,12 @@ public class WebAuthController {
 
     private final UserService userService;
 
+    @GetMapping("/")
+    public String index() {
+        return "index";
+    }
+
+
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
         model.addAttribute("registrationForm", new RegistrationForm());
