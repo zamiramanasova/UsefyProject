@@ -15,4 +15,5 @@ public interface ChatService {
     ChatMessage addUserMessage(Long chatSessionId, String content);
 
     List<ChatMessage> getChatMessages(Long chatSessionId);
+
 }

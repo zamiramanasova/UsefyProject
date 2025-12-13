@@ -31,7 +31,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public List<ChatSession> getUserChats(User user) {
-        return chatSessionRepository.findByUser(user);
+        return chatSessionRepository.findByUserOrderByCreatedAtDesc(user);
     }
 
     @Override
@@ -55,4 +55,5 @@ public class ChatServiceImpl implements ChatService {
 
         return chatMessageRepository.findByChatSessionOrderByCreatedAt(chat);
     }
+
 }
