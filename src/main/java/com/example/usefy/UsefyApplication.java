@@ -13,32 +13,32 @@ public class UsefyApplication {
     public static void main(String[] args) {
         SpringApplication.run(UsefyApplication.class, args);
     }
-    @Bean
-    public CommandLineRunner testChat(
-            UserService userService,
-            ChatService chatService
-    ) {
-        return args -> {
-
-            // 1. Создаём пользователя (если ещё нет)
-            User user = userService.findByUsername("testuser");
-            if (user == null) {
-                user = userService.registerUser(
-                        "testuser",
-                        "password",
-                        "test@test.com"
-                );
-            }
-
-            // 2. Создаём чат
-            var chat = chatService.createChat(user, "First chat");
-            System.out.println("Chat created: " + chat.getId());
-
-            // 3. Добавляем сообщение
-            chatService.addUserMessage(chat.getId(), "Hello from user!");
-
-            System.out.println("Message added");
-        };
-    }
+//    @Bean
+//    public CommandLineRunner testChat(
+//            UserService userService,
+//            ChatService chatService
+//    ) {
+//        return args -> {
+//
+//            // 1. Создаём пользователя (если ещё нет)
+//            User user = userService.findByUsername("testuser");
+//            if (user == null) {
+//                user = userService.registerUser(
+//                        "testuser",
+//                        "password",
+//                        "test@test.com"
+//                );
+//            }
+//
+//            // 2. Создаём чат
+//            var chat = chatService.createChat(user, "First chat");
+//            System.out.println("Chat created: " + chat.getId());
+//
+//            // 3. Добавляем сообщение
+//            chatService.addUserMessage(chat.getId(), "Hello from user!");
+//
+//            System.out.println("Message added");
+//        };
+//    }
 }
 
