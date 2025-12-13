@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Чат</title>
+</head>
+<body>
+
+<h1>Чат</h1>
+
+<div>
+    <div th:each="msg : ${messages}">
+        <b th:text="${msg.role}"></b>:
+        <span th:text="${msg.content}"></span>
+    </div>
+</div>
+
+<hr/>
+
+<form th:action="@{/chats/{id}/message(id=${chatId})}" method="post">
+    <input type="text" name="content" placeholder="Введите сообщение" required>
+    <button type="submit">Отправить</button>
+</form>
+
+<br/>
+<a href="/chats">Назад к чатам</a>
+
+</body>
+</html>

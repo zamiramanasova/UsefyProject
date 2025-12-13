@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Мои чаты</title>
+</head>
+<body>
+
+<h1>Мои чаты</h1>
+
+<form th:action="@{/chats}" method="post">
+    <input type="text" name="title" placeholder="Название чата" required>
+    <button type="submit">Создать чат</button>
+</form>
+
+<hr/>
+
+<ul>
+    <li th:each="chat : ${chats}">
+        <a th:href="@{/chats/{id}(id=${chat.id})}"
+           th:text="${chat.title}">
+        </a>
+    </li>
+</ul>
+
+<br/>
+<a href="/">На главную</a>
+
+</body>
+</html>
