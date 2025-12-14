@@ -58,7 +58,7 @@ public class WebChatController {
             @PathVariable Long id,
             @RequestParam String content
     ) {
-        chatService.addUserMessage(id, content);
+        chatService.addUserMessageAndAiReply(id, content);
         return "redirect:/chats/" + id;
     }
 }

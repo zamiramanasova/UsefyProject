@@ -16,4 +16,5 @@ public interface ChatService {
 
     List<ChatMessage> getChatMessages(Long chatSessionId);
 
+    void addUserMessageAndAiReply(Long chatId, String userMessage);
 }
