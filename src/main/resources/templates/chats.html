@@ -14,15 +14,17 @@
 </form>
 
 <hr/>
-
+<p th:if="${#lists.isEmpty(chats)}">
+    У вас пока нет чатов. Создайте первый 👇
+</p>
 <ul>
     <li th:each="chat : ${chats}">
+        📌
         <a th:href="@{/chats/{id}(id=${chat.id})}"
            th:text="${chat.title}">
         </a>
     </li>
 </ul>
-
 <br/>
 <a href="/">На главную</a>
 
