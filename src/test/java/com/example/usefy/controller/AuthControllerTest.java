@@ -8,10 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -52,7 +53,7 @@ class AuthControllerTest {
         mockMvc.perform(post("/api/auth/register")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.username").value("test"))
                 .andExpect(jsonPath("$.email").value("test@mail.com"));
     }
@@ -78,4 +79,46 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Login successful"));
     }
+    @Test
+    void register_shouldReturnBadRequest_whenUsernameIsEmpty() throws Exception {
+        UserRegistrationRequest request = new UserRegistrationRequest();
+        request.setUsername("");
+        request.setPassword("1234");
+        request.setEmail("test@test.com");
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void register_shouldReturnBadRequest_whenPasswordIsEmpty() throws Exception {
+        UserRegistrationRequest request = new UserRegistrationRequest();
+        request.setUsername("testuser");
+        request.setPassword("");
+        request.setEmail("test@test.com");
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void register_shouldReturnBadRequest_whenEmailIsInvalid() throws Exception {
+        UserRegistrationRequest request = new UserRegistrationRequest();
+        request.setUsername("testuser");
+        request.setPassword("1234");
+        request.setEmail("invalid-email");
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+
+        verify(userService, never()).registerUser(any(), any(), any());
+
+    }
+
 }
