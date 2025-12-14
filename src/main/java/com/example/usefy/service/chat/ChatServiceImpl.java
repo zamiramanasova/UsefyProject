@@ -17,6 +17,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
 
+    private static final int CONTEXT_LIMIT = 5;
+
     private final ChatSessionRepository chatSessionRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final AiService aiService;
@@ -27,7 +29,7 @@ public class ChatServiceImpl implements ChatService {
         ChatSession chat = chatSessionRepository.findById(chatId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat not found"));
 
-        // 1. USER message
+        // 1. сохраняем USER сообщение
         ChatMessage userMsg = ChatMessage.builder()
                 .chatSession(chat)
                 .content(userMessage)
@@ -36,8 +38,16 @@ public class ChatServiceImpl implements ChatService {
 
         chatMessageRepository.save(userMsg);
 
-        // 2. AI message
-        String aiAnswer = aiService.generateAnswer(userMessage);
+        // 2. получаем последние сообщения для контекста
+        List<String> context = chatMessageRepository
+                .findTop5ByChatSessionOrderByCreatedAtDesc(chat)
+                .stream()
+                .filter(msg -> msg.getRole() == MessageRole.USER)
+                .map(ChatMessage::getContent)
+                .toList();
+
+        // 3. AI ответ
+        String aiAnswer = aiService.generateAnswer(userMessage, context);
 
         ChatMessage aiMsg = ChatMessage.builder()
                 .chatSession(chat)
@@ -47,7 +57,6 @@ public class ChatServiceImpl implements ChatService {
 
         chatMessageRepository.save(aiMsg);
     }
-
     @Override
     public ChatSession createChat(User user, String title) {
         ChatSession chat = ChatSession.builder()
