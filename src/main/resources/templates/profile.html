@@ -1,33 +1,12 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <title>Профиль</title>
-</head>
-<body>
-
 <h1>Профиль</h1>
 
 <p>Привет, <span th:text="${username}">User</span></p>
 
-<hr/>
-
-<h3>Чаты</h3>
-
-<a href="/chats">Мои чаты</a>
-
-<br/><br/>
-
-<form action="/chats" method="post">
-    <input type="text" name="title" placeholder="Название нового чата" required/>
-    <button type="submit">Создать чат</button>
-</form>
-
-<hr/>
+<ul>
+    <li><a th:href="@{/courses}">📚 Курсы</a></li>
+    <li><a th:href="@{/chats}">💬 Чаты</a></li>
+</ul>
 
 <form th:action="@{/logout}" method="post">
     <button type="submit">Выйти</button>
 </form>
-
-</body>
-</html>

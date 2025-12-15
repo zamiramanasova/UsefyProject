@@ -1,11 +1,14 @@
 package com.example.usefy.web;
 
 import com.example.usefy.model.course.Course;
+import com.example.usefy.model.course.Section;
 import com.example.usefy.service.course.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -15,29 +18,45 @@ public class WebCourseController {
     private final CourseService courseService;
 
     /**
-     * 📚 Список всех курсов
-     * URL: GET /courses
+     * 1️⃣ Список всех курсов
+     * GET /courses
      */
     @GetMapping
-    public String listCourses(Model model) {
-        model.addAttribute("courses", courseService.getAllCourses());
+    public String courseList(Model model) {
+        List<Course> courses = courseService.getAllCourses();
+        model.addAttribute("courses", courses);
         return "courses";
     }
 
     /**
-     * 📖 Страница одного курса + его секции
-     * URL: GET /courses/{id}
+     * 2️⃣ Страница конкретного курса + его секции
+     * GET /courses/{id}
      */
     @GetMapping("/{id}")
-    public String viewCourse(
+    public String courseDetails(
             @PathVariable Long id,
             Model model
     ) {
         Course course = courseService.getCourseById(id);
+        List<Section> sections = courseService.getSectionsByCourse(id);
+
         model.addAttribute("course", course);
-        model.addAttribute("sections", course.getSections());
+        model.addAttribute("sections", sections);
+
         return "course";
     }
 
+    /**
+     * 3️⃣ Страница конкретного урока (секции)
+     * GET /courses/sections/{sectionId}
+     */
+    @GetMapping("/sections/{sectionId}")
+    public String sectionDetails(
+            @PathVariable Long sectionId,
+            Model model
+    ) {
+        Section section = courseService.getSection(sectionId);
+        model.addAttribute("section", section);
+        return "section";
+    }
 }
-

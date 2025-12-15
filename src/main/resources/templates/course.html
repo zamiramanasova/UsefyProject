@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${course.title}">Курс</title>
+</head>
+<body>
+
+<h1 th:text="${course.title}">Название курса</h1>
+
+<p th:text="${course.description}">Описание</p>
+
+<h2>Секции</h2>
+
+<ul>
+    <li th:each="section : ${sections}">
+        <a th:href="@{/sections/{id}(id=${section.id})}"
+           th:text="${section.title}">
+        </a>
+    </li>
+</ul>
+
+<br/>
+<a th:href="@{/courses}">← Назад к курсам</a>
+
+</body>
+</html>
