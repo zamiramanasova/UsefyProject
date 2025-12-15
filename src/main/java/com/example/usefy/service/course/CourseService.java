@@ -7,9 +7,15 @@ import java.util.List;
 
 public interface CourseService {
 
+    /**
+     * Получить список всех курсов
+     */
     List<Course> getAllCourses();
 
-    Course getCourseById(Long courseId);
+    /**
+     * Получить курс по id
+     */
+    Course getCourseById(Long id);
 
     List<Section> getSectionsByCourse(Long courseId);
 

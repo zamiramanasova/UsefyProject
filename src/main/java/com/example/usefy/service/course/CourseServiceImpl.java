@@ -23,9 +23,11 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Course getCourseById(Long courseId) {
-        return courseRepository.findById(courseId)
-                .orElseThrow(() -> new EntityNotFoundException("Course not found"));
+    public Course getCourseById(Long id) {
+        return courseRepository.findById(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Course not found with id=" + id)
+                );
     }
 
     @Override
