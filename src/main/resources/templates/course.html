@@ -14,11 +14,12 @@
 
 <ul>
     <li th:each="section : ${sections}">
-        <a th:href="@{/sections/{id}(id=${section.id})}"
-           th:text="${section.title}">
+        <a th:href="@{/courses/sections/{id}(id=${section.id})}">
+            <span th:text="'Урок ' + ${section.orderIndex}"></span>
         </a>
     </li>
 </ul>
+
 
 <br/>
 <a th:href="@{/courses}">← Назад к курсам</a>
