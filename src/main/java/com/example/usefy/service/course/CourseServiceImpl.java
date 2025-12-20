@@ -3,9 +3,11 @@ package com.example.usefy.service.course;
 import com.example.usefy.model.User;
 import com.example.usefy.model.course.Course;
 import com.example.usefy.model.course.Section;
+import com.example.usefy.model.course.UserCourseProgress;
 import com.example.usefy.repository.UserRepository;
 import com.example.usefy.repository.course.CourseRepository;
 import com.example.usefy.repository.course.SectionRepository;
+import com.example.usefy.repository.course.UserCourseProgressRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,8 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final SectionRepository sectionRepository;
     private final UserRepository userRepository;
+    private final UserCourseProgressRepository progressRepository;
+
 
     @Override
     public List<Course> getAllCourses() {
@@ -65,5 +69,40 @@ public class CourseServiceImpl implements CourseService {
 
         return user.getEnrolledCourses().contains(course);
     }
+
+    @Override
+    public boolean isSectionCompleted(String username, Long sectionId) {
+        var user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        var section = sectionRepository.findById(sectionId)
+                .orElseThrow(() -> new RuntimeException("Section not found"));
+
+        return progressRepository.existsByUserAndSection(user, section);
+    }
+
+    @Override
+    public void completeSection(String username, Long sectionId) {
+        var user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        var section = sectionRepository.findById(sectionId)
+                .orElseThrow(() -> new RuntimeException("Section not found"));
+
+        if (progressRepository.existsByUserAndSection(user, section)) {
+            return; // уже сохранено — не дублируем
+        }
+
+        var progress = UserCourseProgress.builder()
+                .user(user)
+                .course(section.getCourse())
+                .section(section)
+                .completed(true)
+                .completedAt(java.time.LocalDateTime.now())
+                .build();
+
+        progressRepository.save(progress);
+    }
+
 
 }

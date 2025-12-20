@@ -25,6 +25,10 @@ public interface CourseService {
 
     boolean isUserEnrolled(String username, Course course);
 
+    boolean isSectionCompleted(String username, Long sectionId);
+
+    void completeSection(String username, Long sectionId);
+
 
 }
 
