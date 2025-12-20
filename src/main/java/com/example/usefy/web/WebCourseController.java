@@ -4,6 +4,8 @@ import com.example.usefy.model.course.Course;
 import com.example.usefy.model.course.Section;
 import com.example.usefy.service.course.CourseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -62,9 +64,12 @@ public class WebCourseController {
     }
 
     @PostMapping("/{id}/enroll")
-    public String enroll(@PathVariable Long id, Principal principal) {
-        courseService.enrollUserToCourse(principal.getName(), id);
-        return "redirect:/profile"; // или куда нужно
+    public String enrollCourse(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails principal
+    ) {
+        courseService.enrollUserToCourse(principal.getUsername(), id);
+        return "redirect:/profile";
     }
 
 }

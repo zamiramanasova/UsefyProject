@@ -2,6 +2,17 @@
 
 <p>Привет, <span th:text="${username}">User</span></p>
 
+<h2>Мои курсы</h2>
+
+<ul>
+    <li th:each="course : ${user.enrolledCourses}">
+        <a th:href="@{/courses/{id}(id=${course.id})}"
+           th:text="${course.title}">
+        </a>
+    </li>
+</ul>
+
+
 <ul>
     <li><a th:href="@{/courses}">📚 Курсы</a></li>
     <li><a th:href="@{/chats}">💬 Чаты</a></li>

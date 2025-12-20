@@ -58,9 +58,4 @@ public class WebAuthController {
         return "login";
     }
 
-    @GetMapping("/profile")
-    public String profile(@AuthenticationPrincipal UserDetails principal, Model model) {
-        model.addAttribute("username", principal != null ? principal.getUsername() : "anonymous");
-        return "profile";
-    }
 }
