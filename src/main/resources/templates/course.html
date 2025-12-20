@@ -27,8 +27,12 @@
 <ul>
     <li th:each="section : ${sections}">
         <a th:href="@{/courses/sections/{id}(id=${section.id})}">
-            <span th:text="'Урок ' + ${section.orderIndex}"></span>
+            <span th:text="${section.content}"></span>
         </a>
+
+        <span th:if="${completedSections != null and completedSections.contains(section.id)}">
+            ✅
+        </span>
     </li>
 </ul>
 

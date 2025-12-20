@@ -2,6 +2,7 @@ package com.example.usefy.web;
 
 import com.example.usefy.model.course.Course;
 import com.example.usefy.model.course.Section;
+import com.example.usefy.model.course.UserCourseProgress;
 import com.example.usefy.service.course.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +20,7 @@ import java.util.List;
 public class WebCourseController {
 
     private final CourseService courseService;
+
 
     /**
      * 1️⃣ Список всех курсов
@@ -57,7 +59,6 @@ public class WebCourseController {
         return "course";
     }
 
-
     /**
      * 3️⃣ Страница конкретного урока (секции)
      * GET /courses/sections/{sectionId}
@@ -65,12 +66,20 @@ public class WebCourseController {
     @GetMapping("/sections/{sectionId}")
     public String sectionDetails(
             @PathVariable Long sectionId,
-            Model model
+            Model model,
+            @AuthenticationPrincipal UserDetails user
     ) {
         Section section = courseService.getSection(sectionId);
+
+        boolean completed = sectionProgressService
+                .isSectionCompleted(user.getUsername(), sectionId);
+
         model.addAttribute("section", section);
+        model.addAttribute("completed", completed);
+
         return "section";
     }
+
 
     @PostMapping("/{id}/enroll")
     public String enrollCourse(
@@ -79,6 +88,15 @@ public class WebCourseController {
     ) {
         courseService.enrollUserToCourse(principal.getUsername(), id);
         return "redirect:/profile";
+    }
+
+    @PostMapping("/sections/{sectionId}/complete")
+    public String completeSection(
+            @PathVariable Long sectionId,
+            @AuthenticationPrincipal UserDetails principal
+    ) {
+        courseService.completeSection(principal.getUsername(), sectionId);
+        return "redirect:/courses/sections/" + sectionId;
     }
 
 }
