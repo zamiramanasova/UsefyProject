@@ -2,15 +2,15 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${section.title}">Секция</title>
+    <title th:text="${section.course.title}">Section</title>
 </head>
 <body>
 
-<h1 th:text="${section.title}">Секция</h1>
+<h1 th:text="${section.course.title}"></h1>
 
-<div th:text="${section.content}">
-    Контент секции
-</div>
+<h2>Урок № <span th:text="${section.orderIndex}"></span></h2>
+
+<p th:text="${section.content}"></p>
 
 <br/>
 <a th:href="@{/courses/{id}(id=${section.course.id})}">

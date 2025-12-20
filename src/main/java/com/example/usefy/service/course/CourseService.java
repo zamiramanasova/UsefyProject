@@ -20,5 +20,6 @@ public interface CourseService {
     List<Section> getSectionsByCourse(Long courseId);
 
     Section getSection(Long sectionId);
+
 }
 
