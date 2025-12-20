@@ -13,7 +13,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -104,17 +106,32 @@ public class CourseServiceImpl implements CourseService {
         progressRepository.save(progress);
     }
 
-    public List<Section> markCompletedSections(String username, List<Section> sections) {
+    @Override
+    public Map<Long, Boolean> markCompletedSections(String username, List<Section> sections) {
+
         var user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        sections.forEach(section -> {
-            boolean done = progressRepository.existsByUserAndSection(user, section);
-            section.setCompleted(done);
-        });
+        Map<Long, Boolean> map = new HashMap<>();
 
-        return sections;
+        for (Section s : sections) {
+            boolean done = progressRepository.existsByUserAndSection(user, s);
+            map.put(s.getId(), done);
+        }
+
+        return map;
     }
 
+
+    @Override
+    public int getCompletedSectionsCount(String username, Long courseId) {
+
+        var user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Course course = getCourseById(courseId);
+
+        return progressRepository.countByUserAndCourseAndCompletedTrue(user, course);
+    }
 
 }

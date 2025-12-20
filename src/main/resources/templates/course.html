@@ -10,6 +10,15 @@
 
 <p th:text="${course.description}">Описание</p>
 
+<div th:if="${enrolled}">
+    <h3>
+        Прогресс:
+        <span th:text="${completed}"></span> /
+        <span th:text="${total}"></span>
+    </h3>
+</div>
+
+
 <h2>Секции</h2>
 
 <div th:if="${enrolled}">
@@ -23,18 +32,34 @@
 </div>
 
 
+<h2>Секции</h2>
 
 <ul>
     <li th:each="section : ${sections}">
-        <a th:href="@{/courses/sections/{id}(id=${section.id})}">
-            <span th:text="'Урок ' + ${section.orderIndex}"></span>
+        <a th:href="@{/courses/sections/{id}(id=${section.id})}"
+           th:text="${section.content}">
         </a>
 
-        <span th:if="${section.completed}" style="color: green;">
-            ✓ Пройден
+        <!-- Галочка, если пройдено -->
+        <span th:if="${completedSections[section.id]}">
+        ✓ Пройдено
         </span>
+
     </li>
 </ul>
+
+
+<!--<ul>-->
+<!--    <li th:each="section : ${sections}">-->
+<!--        <a th:href="@{/courses/sections/{id}(id=${section.id})}">-->
+<!--            <span th:text="'Урок ' + ${section.orderIndex}"></span>-->
+<!--        </a>-->
+
+<!--        <span th:if="${section.completed}" style="color: green;">-->
+<!--            ✓ Пройден-->
+<!--        </span>-->
+<!--    </li>-->
+<!--</ul>-->
 
 <br/>
 <a th:href="@{/courses}">← Назад к курсам</a>

@@ -16,4 +16,8 @@ public interface UserCourseProgressRepository extends JpaRepository<UserCoursePr
     List<UserCourseProgress> findByUserAndCourse(User user, Course course);
 
     boolean existsByUserAndSection(User user, Section section);
+
+    int countByUserAndCourseAndCompletedTrue(User user, Course course);
+
 }
+

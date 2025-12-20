@@ -4,6 +4,7 @@ import com.example.usefy.model.course.Course;
 import com.example.usefy.model.course.Section;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CourseService {
 
@@ -29,7 +30,9 @@ public interface CourseService {
 
     void completeSection(String username, Long sectionId);
 
-    List<Section> markCompletedSections(String username, List<Section> sections);
+    Map<Long, Boolean> markCompletedSections(String username, List<Section> sections);
+
+    int getCompletedSectionsCount(String username, Long courseId);
 
 
 }

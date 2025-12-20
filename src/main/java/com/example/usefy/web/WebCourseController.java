@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -44,19 +43,41 @@ public class WebCourseController {
             Model model
     ) {
         Course course = courseService.getCourseById(id);
-        boolean enrolled = false;
         List<Section> sections = courseService.getSectionsByCourse(id);
 
+        boolean enrolled = false;
+        int completed = 0;
+
         if (principal != null) {
-            sections = courseService.markCompletedSections(principal.getUsername(), sections);
+            enrolled = courseService.isUserEnrolled(principal.getUsername(), course);
+
+            if (enrolled) {
+                completed = courseService.getCompletedSectionsCount(
+                        principal.getUsername(),
+                        id
+                );
+            }
         }
 
         model.addAttribute("course", course);
         model.addAttribute("sections", sections);
         model.addAttribute("enrolled", enrolled);
+        model.addAttribute("completed", completed);
+        model.addAttribute("total", sections.size());
+
+        if (enrolled && principal != null) {
+            model.addAttribute(
+                    "completedSections",
+                    courseService.markCompletedSections(principal.getUsername(), sections)
+            );
+        } else {
+            model.addAttribute("completedSections", java.util.Map.of());
+        }
+
 
         return "course";
     }
+
 
     /**
      * 3️⃣ Страница конкретного урока (секции)
