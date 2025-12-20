@@ -58,4 +58,12 @@ public class CourseServiceImpl implements CourseService {
         userRepository.save(user);
     }
 
+    @Override
+    public boolean isUserEnrolled(String username, Course course) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        return user.getEnrolledCourses().contains(course);
+    }
+
 }

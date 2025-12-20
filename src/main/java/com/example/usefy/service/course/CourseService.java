@@ -23,6 +23,8 @@ public interface CourseService {
 
     void enrollUserToCourse(String username, Long courseId);
 
+    boolean isUserEnrolled(String username, Course course);
+
 
 }
 

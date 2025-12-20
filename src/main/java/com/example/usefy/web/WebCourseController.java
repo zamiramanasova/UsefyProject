@@ -38,16 +38,25 @@ public class WebCourseController {
     @GetMapping("/{id}")
     public String courseDetails(
             @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails principal,
             Model model
     ) {
         Course course = courseService.getCourseById(id);
         List<Section> sections = courseService.getSectionsByCourse(id);
 
+        boolean enrolled = false;
+
+        if (principal != null) {
+            enrolled = courseService.isUserEnrolled(principal.getUsername(), course);
+        }
+
         model.addAttribute("course", course);
         model.addAttribute("sections", sections);
+        model.addAttribute("enrolled", enrolled);
 
         return "course";
     }
+
 
     /**
      * 3️⃣ Страница конкретного урока (секции)
