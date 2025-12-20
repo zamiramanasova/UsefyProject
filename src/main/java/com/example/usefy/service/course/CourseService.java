@@ -21,5 +21,8 @@ public interface CourseService {
 
     Section getSection(Long sectionId);
 
+    void enrollUserToCourse(String username, Long courseId);
+
+
 }
 
