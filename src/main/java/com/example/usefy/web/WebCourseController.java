@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -59,4 +60,11 @@ public class WebCourseController {
         model.addAttribute("section", section);
         return "section";
     }
+
+    @PostMapping("/{id}/enroll")
+    public String enroll(@PathVariable Long id, Principal principal) {
+        courseService.enrollUserToCourse(principal.getName(), id);
+        return "redirect:/profile"; // или куда нужно
+    }
+
 }

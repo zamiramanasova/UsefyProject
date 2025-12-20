@@ -12,6 +12,11 @@
 
 <h2>Секции</h2>
 
+<form th:action="@{/courses/{id}/enroll(id=${course.id})}" method="post">
+    <button type="submit">Записаться на курс</button>
+</form>
+
+
 <ul>
     <li th:each="section : ${sections}">
         <a th:href="@{/courses/sections/{id}(id=${section.id})}">
