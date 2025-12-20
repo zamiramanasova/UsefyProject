@@ -104,5 +104,17 @@ public class CourseServiceImpl implements CourseService {
         progressRepository.save(progress);
     }
 
+    public List<Section> markCompletedSections(String username, List<Section> sections) {
+        var user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        sections.forEach(section -> {
+            boolean done = progressRepository.existsByUserAndSection(user, section);
+            section.setCompleted(done);
+        });
+
+        return sections;
+    }
+
 
 }

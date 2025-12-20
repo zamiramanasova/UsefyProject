@@ -44,12 +44,11 @@ public class WebCourseController {
             Model model
     ) {
         Course course = courseService.getCourseById(id);
+        boolean enrolled = false;
         List<Section> sections = courseService.getSectionsByCourse(id);
 
-        boolean enrolled = false;
-
         if (principal != null) {
-            enrolled = courseService.isUserEnrolled(principal.getUsername(), course);
+            sections = courseService.markCompletedSections(principal.getUsername(), sections);
         }
 
         model.addAttribute("course", course);

@@ -29,6 +29,8 @@ public interface CourseService {
 
     void completeSection(String username, Long sectionId);
 
+    List<Section> markCompletedSections(String username, List<Section> sections);
+
 
 }
 
