@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(WebCourseController.class)
-class WebCourseControllerTest {
+class WebCourseControllerTest2 {
 
     @Autowired
     private MockMvc mockMvc;
@@ -100,6 +100,5 @@ class WebCourseControllerTest {
                 .andExpect(view().name("section"))
                 .andExpect(model().attributeExists("section"));
     }
-
 
 }
