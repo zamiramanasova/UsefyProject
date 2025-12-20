@@ -71,7 +71,7 @@ public class WebCourseController {
     ) {
         Section section = courseService.getSection(sectionId);
 
-        boolean completed = sectionProgressService
+        boolean completed = courseService
                 .isSectionCompleted(user.getUsername(), sectionId);
 
         model.addAttribute("section", section);
@@ -79,6 +79,7 @@ public class WebCourseController {
 
         return "section";
     }
+
 
 
     @PostMapping("/{id}/enroll")
