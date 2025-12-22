@@ -1,18 +1,16 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${section.course.title}">Section</title>
-</head>
-<body>
+<h1 th:text="${section.course.title}"></h1>
 
 <h2 th:text="'Урок № ' + ${section.orderIndex}"></h2>
 
-<p th:text="${section.content}"></p>
+<div style="border:1px solid #ccc;padding:15px;border-radius:8px;">
+    <pre th:text="${section.content}"></pre>
+</div>
+
+<br/>
 
 <div th:if="${completed}">
-    <p style="color:green; font-weight:bold;">
-        ✓ Урок пройден
+    <p style="color:green;font-weight:bold;">
+        ✓ Урок уже пройден
     </p>
 </div>
 
@@ -27,10 +25,9 @@
         <button type="submit">Отметить как пройдено</button>
     </form>
 </div>
-<br>
+
+<br/>
+
 <a th:href="@{/courses/{id}(id=${section.course.id})}">
     ← Назад к курсу
 </a>
-
-</body>
-</html>
