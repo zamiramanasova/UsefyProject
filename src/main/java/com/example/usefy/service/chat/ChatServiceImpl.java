@@ -94,4 +94,20 @@ public class ChatServiceImpl implements ChatService {
         return chatMessageRepository.findByChatSessionOrderByCreatedAt(chat);
     }
 
+    @Override
+    public ChatSession getOrCreateSectionChat(User user, Long sectionId) {
+
+        return chatSessionRepository.findByUserAndSectionId(user, sectionId)
+                .orElseGet(() -> {
+                    ChatSession chat = ChatSession.builder()
+                            .user(user)
+                            .title("Чат по уроку " + sectionId)
+                            .sectionId(sectionId)
+                            .build();
+
+                    return chatSessionRepository.save(chat);
+                });
+    }
+
+
 }

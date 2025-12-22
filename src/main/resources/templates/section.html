@@ -1,33 +1,65 @@
-<h1 th:text="${section.course.title}"></h1>
+<body>
 
-<h2 th:text="'Урок № ' + ${section.orderIndex}"></h2>
+<div style="display:flex; gap:25px;">
 
-<div style="border:1px solid #ccc;padding:15px;border-radius:8px;">
-    <pre th:text="${section.content}"></pre>
+    <!-- LEFT: Section content -->
+    <div style="width:65%;">
+        <h1 th:text="${section.course.title}"></h1>
+
+        <h2 th:text="'Урок № ' + ${section.orderIndex}"></h2>
+
+        <div style="border:1px solid #ccc;padding:15px;border-radius:8px;">
+            <pre th:text="${section.content}"></pre>
+        </div>
+
+        <br/>
+
+        <div th:if="${completed}">
+            <p style="color:green;font-weight:bold;">
+                ✓ Урок уже пройден
+            </p>
+        </div>
+
+        <div th:if="${!completed}">
+            <form th:action="@{/courses/sections/{id}/complete(id=${section.id})}"
+                  method="post">
+
+                <input type="hidden"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}"/>
+
+                <button type="submit">Отметить как пройдено</button>
+            </form>
+        </div>
+
+        <br/>
+
+        <a th:href="@{/courses/{id}(id=${section.course.id})}">
+            ← Назад к курсу
+        </a>
+    </div>
+
+
+    <!-- RIGHT: AI Assistant -->
+    <div style="width:35%; border-left:1px solid #ddd; padding-left:20px;">
+        <h3>AI Assistant</h3>
+
+        <div style="height:400px; overflow-y:auto; border:1px solid #ccc; padding:10px; border-radius:8px;">
+            Тут скоро будет чат 😎
+        </div>
+
+        <br/>
+
+        <form method="post">
+            <textarea placeholder="Задай вопрос по уроку..."
+                      style="width:100%; height:80px;"></textarea>
+
+            <br/><br/>
+
+            <button type="submit">Отправить</button>
+        </form>
+    </div>
+
 </div>
 
-<br/>
-
-<div th:if="${completed}">
-    <p style="color:green;font-weight:bold;">
-        ✓ Урок уже пройден
-    </p>
-</div>
-
-<div th:if="${!completed}">
-    <form th:action="@{/courses/sections/{id}/complete(id=${section.id})}"
-          method="post">
-
-        <input type="hidden"
-               th:name="${_csrf.parameterName}"
-               th:value="${_csrf.token}"/>
-
-        <button type="submit">Отметить как пройдено</button>
-    </form>
-</div>
-
-<br/>
-
-<a th:href="@{/courses/{id}(id=${section.course.id})}">
-    ← Назад к курсу
-</a>
+</body>
