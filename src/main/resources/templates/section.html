@@ -45,14 +45,20 @@
         <h3>AI Assistant</h3>
 
         <div style="height:400px; overflow-y:auto; border:1px solid #ccc; padding:10px; border-radius:8px;">
-            Тут скоро будет чат 😎
+            <div th:each="msg : ${messages}">
+                <b th:text="${msg.role}"></b>:
+                <p th:text="${msg.content}"></p>
+                <hr/>
+            </div>
         </div>
 
         <br/>
 
-        <form method="post">
-            <textarea placeholder="Задай вопрос по уроку..."
-                      style="width:100%; height:80px;"></textarea>
+        <form th:action="@{/sections/{id}/ask(id=${section.id})}" method="post">
+        <textarea name="question"
+                  placeholder="Задай вопрос по уроку..."
+                  style="width:100%; height:80px;"
+                  required></textarea>
 
             <br/><br/>
 
@@ -61,5 +67,4 @@
     </div>
 
 </div>
-
 </body>
