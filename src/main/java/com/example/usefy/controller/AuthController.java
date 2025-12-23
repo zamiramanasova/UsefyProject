@@ -36,8 +36,6 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
-
-
     @PostMapping("/login")
     public String login(@RequestBody LoginRequest request) {
 
