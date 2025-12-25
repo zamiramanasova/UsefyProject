@@ -3,7 +3,6 @@ package com.example.usefy.service.chat;
 import com.example.usefy.model.User;
 import com.example.usefy.model.chat.ChatMessage;
 import com.example.usefy.model.chat.ChatSession;
-import com.example.usefy.model.chat.MessageRole;
 import com.example.usefy.repository.chat.ChatMessageRepository;
 import com.example.usefy.repository.chat.ChatSessionRepository;
 import com.example.usefy.service.ai.AiService;
