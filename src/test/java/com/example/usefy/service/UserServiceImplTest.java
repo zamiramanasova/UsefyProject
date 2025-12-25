@@ -87,5 +87,4 @@ class UserServiceImplTest {
         assertNotNull(result);
         assertEquals("test", result.getUsername());
     }
-
 }
