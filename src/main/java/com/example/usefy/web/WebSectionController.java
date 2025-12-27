@@ -28,11 +28,11 @@ public class WebSectionController {
             @AuthenticationPrincipal UserDetails principal,
             Model model
     ) {
-        Section section = courseService.getSection(sectionId);
-
         if (principal == null) {
             return "redirect:/login";
         }
+
+        Section section = courseService.getSection(sectionId);
 
         boolean allowed = courseService.isUserEnrolled(
                 principal.getUsername(),
@@ -44,20 +44,26 @@ public class WebSectionController {
         }
 
         var user = userService.findByUsername(principal.getUsername());
+
+        // 1️⃣ находим / создаём чат
         var chat = chatService.getOrCreateSectionChat(user, sectionId);
 
-        model.addAttribute("chatId", chat.getId());
-        model.addAttribute("messages", chatService.getChatMessages(chat.getId()));
+        // 2️⃣ подгружаем сообщения
+        var messages = chatService.getChatMessages(chat.getId());
 
-        // 🔥 ВАЖНО — ЭТОГО У ТЕБЯ НЕ БЫЛО
-        boolean completed = courseService
-                .isSectionCompleted(principal.getUsername(), sectionId);
-        model.addAttribute("completed", completed);
+        boolean completed = courseService.isSectionCompleted(
+                principal.getUsername(),
+                sectionId
+        );
 
         model.addAttribute("section", section);
+        model.addAttribute("chatId", chat.getId());
+        model.addAttribute("messages", messages);
+        model.addAttribute("completed", completed);
 
         return "section";
     }
+
 
 
 
