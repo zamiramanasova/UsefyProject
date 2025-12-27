@@ -53,16 +53,15 @@
 
         <br/>
 
-        <form th:action="@{/chats/{id}/message(id=${chatId})}" method="post">
-        <textarea name="content"
-                  placeholder="Задай вопрос по уроку..."
-                  style="width:100%; height:80px;"
-                  required></textarea>
-
-            <br/><br/>
+        <form th:action="@{/sections/{id}/ask(id=${section.id})}" method="post">
+            <textarea name="question"
+              placeholder="Задай вопрос по уроку..."
+              style="width:100%; height:80px;" required></textarea>
 
             <button type="submit">Отправить</button>
+
         </form>
+
     </div>
 
 </div>

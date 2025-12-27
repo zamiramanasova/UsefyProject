@@ -28,11 +28,11 @@ public class WebSectionController {
             @AuthenticationPrincipal UserDetails principal,
             Model model
     ) {
+        Section section = courseService.getSection(sectionId);
+
         if (principal == null) {
             return "redirect:/login";
         }
-
-        Section section = courseService.getSection(sectionId);
 
         boolean allowed = courseService.isUserEnrolled(
                 principal.getUsername(),
@@ -43,19 +43,23 @@ public class WebSectionController {
             return "redirect:/courses/" + section.getCourse().getId();
         }
 
-        // ---------- ВАЖНО: здесь связываем секцию и чат ----------
-        User user = userService.findByUsername(principal.getUsername());
-
-        var chat = chatService.getOrCreateSectionChat(user, section);
+        var user = userService.findByUsername(principal.getUsername());
+        var chat = chatService.getOrCreateSectionChat(user, sectionId);
 
         model.addAttribute("chatId", chat.getId());
         model.addAttribute("messages", chatService.getChatMessages(chat.getId()));
-        // ----------------------------------------------------------
+
+        // 🔥 ВАЖНО — ЭТОГО У ТЕБЯ НЕ БЫЛО
+        boolean completed = courseService
+                .isSectionCompleted(principal.getUsername(), sectionId);
+        model.addAttribute("completed", completed);
 
         model.addAttribute("section", section);
 
         return "section";
     }
+
+
 
     @PostMapping("/{sectionId}/ask")
     public String askAi(
