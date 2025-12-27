@@ -1,6 +1,7 @@
 package com.example.usefy.model.chat;
 
 import com.example.usefy.model.User;
+import com.example.usefy.model.course.Section;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -59,4 +60,9 @@ public class ChatSession {
     private void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
+
+    @ManyToOne
+    @JoinColumn(name = "section_id")
+    private Section section;
+
 }
