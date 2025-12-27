@@ -7,6 +7,7 @@ import com.example.usefy.model.chat.MessageRole;
 import com.example.usefy.model.course.Section;
 import com.example.usefy.repository.chat.ChatMessageRepository;
 import com.example.usefy.repository.chat.ChatSessionRepository;
+import com.example.usefy.repository.course.SectionRepository;
 import com.example.usefy.service.ai.AiService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatSessionRepository chatSessionRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final AiService aiService;
+    private final SectionRepository sectionRepository;
 
     @Override
     public void addUserMessageAndAiReply(Long chatId, String userMessage) {
@@ -98,17 +100,21 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public ChatSession getOrCreateSectionChat(User user, Long sectionId) {
 
-        return chatSessionRepository.findByUserAndSectionId(user, sectionId)
+        Section section = sectionRepository.findById(sectionId)
+                .orElseThrow(() -> new IllegalArgumentException("Section not found"));
+
+        return chatSessionRepository.findByUserAndSection(user, section)
                 .orElseGet(() -> {
                     ChatSession chat = ChatSession.builder()
                             .user(user)
-                            .title("Чат по уроку " + sectionId)
-                            .sectionId(sectionId)
+                            .section(section)
+                            .title("Чат по уроку " + section.getOrderIndex())
                             .build();
 
                     return chatSessionRepository.save(chat);
                 });
     }
+
 
     @Override
     public ChatSession getOrCreateSectionChat(User user, Section section) {

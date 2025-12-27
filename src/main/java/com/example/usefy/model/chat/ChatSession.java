@@ -52,10 +52,6 @@ public class ChatSession {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = true)
-    private Long sectionId;
-
-
     @PrePersist
     private void onCreate() {
         this.createdAt = LocalDateTime.now();
