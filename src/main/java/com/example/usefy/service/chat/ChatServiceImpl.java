@@ -4,6 +4,7 @@ import com.example.usefy.model.User;
 import com.example.usefy.model.chat.ChatMessage;
 import com.example.usefy.model.chat.ChatSession;
 import com.example.usefy.model.chat.MessageRole;
+import com.example.usefy.model.course.Section;
 import com.example.usefy.repository.chat.ChatMessageRepository;
 import com.example.usefy.repository.chat.ChatSessionRepository;
 import com.example.usefy.service.ai.AiService;
@@ -109,5 +110,16 @@ public class ChatServiceImpl implements ChatService {
                 });
     }
 
+    @Override
+    public ChatSession getOrCreateSectionChat(User user, Section section) {
+        return chatSessionRepository.findByUserAndSection(user, section)
+                .orElseGet(() -> chatSessionRepository.save(
+                        ChatSession.builder()
+                                .user(user)
+                                .section(section)
+                                .title("Chat for section " + section.getId())
+                                .build()
+                ));
+    }
 
 }
