@@ -1,5 +1,7 @@
 package com.example.usefy.web;
 
+import com.example.usefy.model.User;
+import com.example.usefy.model.chat.ChatSession;
 import com.example.usefy.model.course.Section;
 import com.example.usefy.service.UserService;
 import com.example.usefy.service.chat.ChatService;
@@ -26,23 +28,31 @@ public class WebSectionController {
             @AuthenticationPrincipal UserDetails principal,
             Model model
     ) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
         Section section = courseService.getSection(sectionId);
-        if (principal == null) return "redirect:/login";
 
         boolean allowed = courseService.isUserEnrolled(
                 principal.getUsername(),
                 section.getCourse()
         );
-        if (!allowed) return "redirect:/courses/" + section.getCourse().getId();
 
-        model.addAttribute("section", section);
+        if (!allowed) {
+            return "redirect:/courses/" + section.getCourse().getId();
+        }
 
-        // ===== AI CHAT =====
-        var user = userService.findByUsername(principal.getUsername());
-        var chat = chatService.getOrCreateSectionChat(user, sectionId);
+        // ---------- ВАЖНО: здесь связываем секцию и чат ----------
+        User user = userService.findByUsername(principal.getUsername());
+
+        var chat = chatService.getOrCreateSectionChat(user, section);
 
         model.addAttribute("chatId", chat.getId());
         model.addAttribute("messages", chatService.getChatMessages(chat.getId()));
+        // ----------------------------------------------------------
+
+        model.addAttribute("section", section);
 
         return "section";
     }
