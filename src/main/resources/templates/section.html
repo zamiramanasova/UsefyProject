@@ -1,3 +1,44 @@
+<script>
+    async function sendMessage(e) {
+        e.preventDefault();
+
+        const textarea = document.querySelector("textarea[name='question']");
+        const text = textarea.value.trim();
+        if (!text) return;
+
+        const box = document.getElementById("chatBox");
+
+        // Добавляем сообщение пользователя сразу
+        box.innerHTML += `
+        <div style="margin-bottom:10px;">
+            <b style="color:#2b7cff;">Вы:</b> ${text}
+        </div>
+    `;
+
+        textarea.value = "";
+
+        // Показываем индикатор
+        const typing = document.createElement("div");
+        typing.id = "typing";
+        typing.innerHTML = `<b style="color:green;">AI:</b> печатает...`;
+        box.appendChild(typing);
+        box.scrollTop = box.scrollHeight;
+
+        await fetch(`/api/chat/${sectionId}`, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain" },
+            body: text
+        });
+
+        // Обновляем страницу, чтобы подтянуть историю
+        location.reload();
+    }
+</script>
+
+<script>
+    const sectionId = /*[[${section.id}]]*/ 0;
+</script>
+
 <body>
 
 <div style="display:flex; gap:25px;">
@@ -66,7 +107,8 @@
 
         <br/>
 
-        <form th:action="@{/sections/{id}/ask(id=${section.id})}" method="post">
+        <form onsubmit="sendMessage(event)">
+
         <textarea name="question"
                   placeholder="Задай вопрос по уроку..."
                   style="width:100%; height:80px;" required></textarea>
