@@ -47,9 +47,11 @@ public class WebSectionController {
         var chat = chatService.getOrCreateSectionChat(user, sectionId);
 
         model.addAttribute("chatId", chat.getId());
-
-        // 👇 ВОТ ЭТО ДОБАВЬ
         model.addAttribute("messages", chatService.getChatMessages(chat.getId()));
+
+        boolean completed = courseService
+                .isSectionCompleted(principal.getUsername(), sectionId);
+        model.addAttribute("completed", completed);
 
         model.addAttribute("section", section);
         return "section";
