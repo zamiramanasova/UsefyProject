@@ -57,9 +57,6 @@ public class WebSectionController {
         return "section";
     }
 
-
-
-
     @PostMapping("/{sectionId}/ask")
     public String askAi(
             @PathVariable Long sectionId,
@@ -71,7 +68,9 @@ public class WebSectionController {
 
         chatService.addUserMessageAndAiReply(chat.getId(), question);
 
-        return "redirect:/sections/" + sectionId;
+        return "redirect:/courses/sections/" + sectionId;
     }
+
+
 
 }
