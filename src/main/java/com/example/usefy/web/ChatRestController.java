@@ -1,4 +1,4 @@
-package com.example.usefy.web;
+package com.example.usefy.web.api;
 
 import com.example.usefy.model.User;
 import com.example.usefy.service.UserService;
@@ -17,14 +17,14 @@ public class ChatRestController {
     private final UserService userService;
 
     @PostMapping("/{sectionId}")
-    public void ask(
+    public void sendMessage(
             @PathVariable Long sectionId,
             @AuthenticationPrincipal UserDetails principal,
-            @RequestBody String question
+            @RequestBody String message
     ) {
-        User user = userService.findByUsername(principal.getUsername());
+        var user = userService.findByUsername(principal.getUsername());
         var chat = chatService.getOrCreateSectionChat(user, sectionId);
 
-        chatService.addUserMessageAndAiReply(chat.getId(), question);
+        chatService.addUserMessageAndAiReply(chat.getId(), message);
     }
 }

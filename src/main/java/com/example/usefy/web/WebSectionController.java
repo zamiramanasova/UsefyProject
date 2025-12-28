@@ -1,7 +1,5 @@
 package com.example.usefy.web;
 
-import com.example.usefy.model.User;
-import com.example.usefy.model.chat.ChatSession;
 import com.example.usefy.model.course.Section;
 import com.example.usefy.service.UserService;
 import com.example.usefy.service.chat.ChatService;
@@ -15,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/sections")
+@RequestMapping("/courses/sections")
 public class WebSectionController {
 
     private final CourseService courseService;
@@ -30,18 +28,15 @@ public class WebSectionController {
     ) {
         Section section = courseService.getSection(sectionId);
 
-        if (principal == null) {
-            return "redirect:/login";
-        }
+        if (principal == null) return "redirect:/login";
 
         boolean allowed = courseService.isUserEnrolled(
                 principal.getUsername(),
                 section.getCourse()
         );
 
-        if (!allowed) {
+        if (!allowed)
             return "redirect:/courses/" + section.getCourse().getId();
-        }
 
         var user = userService.findByUsername(principal.getUsername());
         var chat = chatService.getOrCreateSectionChat(user, sectionId);
@@ -54,8 +49,11 @@ public class WebSectionController {
         model.addAttribute("completed", completed);
 
         model.addAttribute("section", section);
+
         return "section";
     }
+
+
 
     @PostMapping("/{sectionId}/ask")
     public String askAi(
@@ -70,7 +68,4 @@ public class WebSectionController {
 
         return "redirect:/courses/sections/" + sectionId;
     }
-
-
-
 }

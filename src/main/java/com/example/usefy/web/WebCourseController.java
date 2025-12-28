@@ -79,27 +79,27 @@ public class WebCourseController {
     }
 
 
-    /**
-     * 3️⃣ Страница конкретного урока (секции)
-     * GET /courses/sections/{sectionId}
-     */
-    @GetMapping("/sections/{sectionId}")
-    public String sectionDetails(
-            @PathVariable Long sectionId,
-            Model model,
-            @AuthenticationPrincipal UserDetails user
-    ) {
-        Section section = courseService.getSection(sectionId);
-
-        boolean completed = courseService
-                .isSectionCompleted(user.getUsername(), sectionId);
-
-        model.addAttribute("section", section);
-        model.addAttribute("completed", completed);
-
-        return "section";
-    }
-
+//    /**
+//     * 3️⃣ Страница конкретного урока (секции)
+//     * GET /courses/sections/{sectionId}
+//     */
+//    @GetMapping("/sections/{sectionId}")
+//    public String sectionDetails(
+//            @PathVariable Long sectionId,
+//            Model model,
+//            @AuthenticationPrincipal UserDetails user
+//    ) {
+//        Section section = courseService.getSection(sectionId);
+//
+//        boolean completed = courseService
+//                .isSectionCompleted(user.getUsername(), sectionId);
+//
+//        model.addAttribute("section", section);
+//        model.addAttribute("completed", completed);
+//
+//        return "section";
+//    }
+//
 
 
     @PostMapping("/{id}/enroll")

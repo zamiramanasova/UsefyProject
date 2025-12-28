@@ -2,6 +2,7 @@ package com.example.usefy.model.chat;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -41,7 +42,8 @@ public class ChatMessage {
     /**
      * Время отправки
      */
-    @Column(nullable = false)
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
