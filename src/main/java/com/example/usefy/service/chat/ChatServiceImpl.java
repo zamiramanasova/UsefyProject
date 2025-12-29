@@ -9,6 +9,7 @@ import com.example.usefy.repository.chat.ChatMessageRepository;
 import com.example.usefy.repository.chat.ChatSessionRepository;
 import com.example.usefy.repository.course.SectionRepository;
 import com.example.usefy.service.ai.AiService;
+import com.example.usefy.service.course.CourseService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,8 @@ public class ChatServiceImpl implements ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final AiService aiService;
     private final SectionRepository sectionRepository;
+    private final CourseService courseService;
+
 
     @Override
     public void addUserMessageAndAiReply(Long chatId, String userMessage) {
@@ -32,7 +35,7 @@ public class ChatServiceImpl implements ChatService {
         ChatSession chat = chatSessionRepository.findById(chatId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat not found"));
 
-        // 1. сохраняем USER сообщение
+        // 1️⃣ сохраняем USER сообщение
         ChatMessage userMsg = ChatMessage.builder()
                 .chatSession(chat)
                 .content(userMessage)
@@ -41,16 +44,25 @@ public class ChatServiceImpl implements ChatService {
 
         chatMessageRepository.save(userMsg);
 
-        // 2. получаем последние сообщения для контекста
+        // 2️⃣ получаем последние 5 сообщений для контекста
         List<String> context = chatMessageRepository
                 .findTop5ByChatSessionOrderByCreatedAtDesc(chat)
                 .stream()
-                .filter(msg -> msg.getRole() == MessageRole.USER)
                 .map(ChatMessage::getContent)
                 .toList();
 
-        // 3. AI ответ
-        String aiAnswer = aiService.generateAnswer(userMessage, context);
+        // 3️⃣ ДОБАВЛЯЕМ КОНТЕНТ УРОКА
+        String lessonText = "";
+        if (chat.getSection() != null) {
+            lessonText = chat.getSection().getContent();
+        }
+
+        // 4️⃣ AI ответ
+        String aiAnswer = aiService.generateAnswer(
+                userMessage,
+                context,
+                lessonText
+        );
 
         ChatMessage aiMsg = ChatMessage.builder()
                 .chatSession(chat)
@@ -60,6 +72,7 @@ public class ChatServiceImpl implements ChatService {
 
         chatMessageRepository.save(aiMsg);
     }
+
     @Override
     public ChatSession createChat(User user, String title) {
         ChatSession chat = ChatSession.builder()

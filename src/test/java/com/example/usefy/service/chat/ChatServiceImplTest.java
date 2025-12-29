@@ -54,7 +54,7 @@ class ChatServiceImplTest {
         when(chatSessionRepository.findById(1L))
                 .thenReturn(Optional.of(chat));
 
-        when(aiService.generateAnswer(any(), any()))
+        when(aiService.generateAnswer(any(), any(), any()))
                 .thenReturn("AI response");
 
         // when
@@ -62,6 +62,6 @@ class ChatServiceImplTest {
 
         // then
         verify(chatMessageRepository, times(2)).save(any(ChatMessage.class));
-        verify(aiService).generateAnswer(eq("Hello"), any());
+        verify(aiService).generateAnswer(eq("Hello"), any(), any());
     }
 }

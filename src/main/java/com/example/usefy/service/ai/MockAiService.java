@@ -8,13 +8,12 @@ import java.util.List;
 public class MockAiService implements AiService {
 
     @Override
-    public String generateAnswer(String userMessage, List<String> chatHistory) {
+    public String generateAnswer(String question, List<String> context, String lesson) {
 
-        String context = chatHistory.isEmpty()
-                ? "no previous messages"
-                : String.join(" | ", chatHistory);
-
-        return "AI response to: '" + userMessage +
-                "' (context: " + context + ")";
+        return "AI ответ по уроку:\n\n"
+                + lesson + "\n\n"
+                + "Вопрос: " + question + "\n"
+                + "Контекст: " + String.join(" | ", context);
     }
+
 }
