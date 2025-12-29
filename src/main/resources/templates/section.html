@@ -48,7 +48,6 @@
 
 
 
-
     <!-- RIGHT: AI CHAT -->
     <div style="width:35%; border-left:1px solid #ddd; padding-left:20px;">
         <h3>AI Assistant</h3>
@@ -62,28 +61,33 @@
 
                 <!-- USER -->
                 <div th:if="${m.role.name() == 'USER'}"
-                     style="align-self:flex-end; background:#e8f0ff;
-                            padding:10px; border-radius:10px; max-width:75%;">
-                    <b style="color:#2b7cff;">Вы</b>
-                    <span style="font-size:12px;color:gray;"
-                          th:text="${#temporals.format(m.createdAt, 'HH:mm')}">
-</span>
-                    <br/>
+                     style="align-self:flex-end;
+                background:#2563eb;
+                color:white;
+                padding:10px 12px;
+                border-radius:12px;
+                max-width:75%;
+                line-height:1.4;">
+                    <b>Вы</b><br/>
                     <span th:text="${m.content}"></span>
-
+                    <div style="font-size:10px; opacity:0.8; margin-top:3px;">
+                        👤 user
+                    </div>
                 </div>
 
                 <!-- AI -->
                 <div th:if="${m.role.name() == 'AI'}"
-                     style="align-self:flex-start; background:#e9ffe8;
-                            padding:10px; border-radius:10px; max-width:75%;">
-                    <b style="color:green;">AI</b>
-                    <span style="font-size:12px;color:gray;"
-                          th:text="${#temporals.format(m.createdAt, 'HH:mm')}">
-</span>
-                    <br/>
+                     style="align-self:flex-start;
+                background:#e9ffe8;
+                padding:10px 12px;
+                border-radius:12px;
+                max-width:75%;
+                line-height:1.4;">
+                    <b style="color:green;">AI</b><br/>
                     <span th:text="${m.content}"></span>
-
+                    <div style="font-size:10px; opacity:0.7; margin-top:3px;">
+                        🤖 assistant
+                    </div>
                 </div>
 
             </div>
@@ -94,15 +98,14 @@
 
         </div>
 
-        <!-- автоскролл вниз -->
         <script>
             const box = document.getElementById('chatBox');
-            box.scrollTop = box.scrollHeight;
+            if (box) box.scrollTop = box.scrollHeight;
         </script>
 
         <br/>
 
-        <!-- Обычная форма, никаких fetch -->
+        <!-- ФОРМА ДОЛЖНА БЫТЬ ВНУТРИ ЭТОГО DIV -->
         <form th:action="@{/courses/sections/{id}/ask(id=${section.id})}"
               method="post">
 
@@ -121,14 +124,6 @@
     </div>
 
 </div>
-
-<script>
-    const box = document.getElementById("chatBox");
-    if (box) {
-        box.scrollTop = box.scrollHeight;
-    }
-</script>
-
 
 </body>
 </html>
