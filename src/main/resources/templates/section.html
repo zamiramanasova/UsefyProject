@@ -17,7 +17,13 @@
         <h2 th:text="'Урок № ' + ${section.orderIndex}"></h2>
 
         <div style="border:1px solid #ccc;padding:15px;border-radius:8px;">
-            <pre th:text="${section.content}"></pre>
+            <div id="lessonContent"></div>
+
+            <script th:inline="javascript">
+                const lessonMarkdown = /*[[${section.content}]]*/ "";
+                document.getElementById("lessonContent").innerHTML = marked.parse(lessonMarkdown);
+            </script>
+
         </div>
 
         <br/>
@@ -48,7 +54,6 @@
     </div>
 
 
-
     <!-- RIGHT: AI CHAT -->
     <div style="width:35%; border-left:1px solid #ddd; padding-left:20px;">
         <h3>AI Assistant</h3>
@@ -70,7 +75,11 @@
                 max-width:75%;
                 line-height:1.4;">
                     <b>Вы</b><br/>
-                    <span th:text="${m.content}"></span>
+                    <div th:if="${m.role.name() == 'AI'}"
+                         class="ai-message">
+                        <b style="color:green;">AI</b><br/>
+                        <div th:utext="${#strings.replace(m.content, '\n', '<br/>')}"></div>
+                    </div>
                     <div style="font-size:10px; opacity:0.8; margin-top:3px;">
                         👤 user
                     </div>
