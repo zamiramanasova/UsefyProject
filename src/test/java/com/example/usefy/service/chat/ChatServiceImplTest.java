@@ -97,14 +97,13 @@ class ChatServiceImplTest {
 
     @Test
     void shouldCreateChatIfNotExists() {
-        ChatSession chat = chatService.getOrCreateSectionChat(user, 1L);
+        ChatSession chat = chatService.getOrCreateSectionChat(user, section.getId());
 
         assertThat(chat).isNotNull();
         assertThat(chat.getUser()).isEqualTo(user);
         assertEquals(section.getId(), chat.getSection().getId());
-
-
     }
+
 
     @Test
     void shouldReturnSameChatForSameUserAndSection() {
