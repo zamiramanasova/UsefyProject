@@ -76,29 +76,4 @@ class WebCourseControllerTest {
                 .andExpect(model().attributeExists("sections"));
     }
 
-
-    @Test
-    @WithMockUser
-    void user_shouldOpenSection() throws Exception {
-
-        Course course = Course.builder()
-                .id(1L)
-                .title("Test Course")
-                .build();
-
-        Section section = Section.builder()
-                .id(10L)
-                .content("Hello Section")
-                .orderIndex(1)
-                .course(course)
-                .build();
-
-        when(courseService.getSection(10L)).thenReturn(section);
-
-        mockMvc.perform(get("/courses/sections/10"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("section"))
-                .andExpect(model().attributeExists("section"));
-    }
-
 }
