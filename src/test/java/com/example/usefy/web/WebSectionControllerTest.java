@@ -16,8 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,35 +26,69 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class WebSectionControllerTest {
 
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @MockBean
-    CourseService courseService;
+    private CourseService courseService;
 
     @MockBean
-    UserService userService;
+    private UserService userService;
 
     @MockBean
-    ChatService chatService;
+    private ChatService chatService;
 
     @Test
     @WithMockUser(username = "test")
     void user_shouldOpenSection() throws Exception {
 
-        Course course = Course.builder().id(1L).build();
+        // ---------- GIVEN ----------
+        Course course = Course.builder()
+                .id(1L)
+                .title("Test Course")
+                .build();
+
         Section section = Section.builder()
                 .id(10L)
+                .orderIndex(1)
+                .content("Hello Section")
                 .course(course)
                 .build();
 
-        ChatSession chat = new ChatSession();
-        chat.setId(1L);
+        User user = User.builder()
+                .id(100L)
+                .username("test")
+                .email("test@test.com")
+                .passwordHash("password")
+                .build();
 
+        ChatSession chat = ChatSession.builder()
+                .id(5L)
+                .section(section)
+                .user(user)
+                .build();
+
+        // ---------- MOCKS ----------
         when(courseService.getSection(10L)).thenReturn(section);
-        when(userService.findByUsername("test")).thenReturn(new User());
-        when(chatService.getOrCreateSectionChat(any(User.class), eq(10L)))
-                .thenReturn(chat);
 
+        when(courseService.isUserEnrolled(
+                eq("test"),
+                eq(course)
+        )).thenReturn(true);
+
+        when(userService.findByUsername("test")).thenReturn(user);
+
+        when(chatService.getOrCreateSectionChat(
+                any(User.class),
+                eq(10L)
+        )).thenReturn(chat);
+
+        when(chatService.getChatMessages(5L))
+                .thenReturn(List.of());
+
+        when(courseService.isSectionCompleted("test", 10L))
+                .thenReturn(false);
+
+        // ---------- WHEN / THEN ----------
         mockMvc.perform(get("/courses/sections/10"))
                 .andExpect(status().isOk());
     }
