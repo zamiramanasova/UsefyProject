@@ -4,7 +4,6 @@ import com.example.usefy.model.User;
 import com.example.usefy.model.course.Section;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
