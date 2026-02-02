@@ -3,7 +3,6 @@ package com.example.usefy.security;
 import com.example.usefy.model.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.GrantedAuthority;
-
 import java.util.Collection;
 import java.util.List;
 
