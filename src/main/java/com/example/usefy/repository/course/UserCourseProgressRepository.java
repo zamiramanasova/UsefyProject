@@ -5,7 +5,6 @@ import com.example.usefy.model.course.Course;
 import com.example.usefy.model.course.Section;
 import com.example.usefy.model.course.UserCourseProgress;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
 import java.util.Optional;
 
