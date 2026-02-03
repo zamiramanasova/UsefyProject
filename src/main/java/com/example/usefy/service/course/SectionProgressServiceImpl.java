@@ -27,6 +27,7 @@ public class SectionProgressServiceImpl implements SectionProgressService {
         if (isSectionCompleted(username, sectionId)) return;
 
         User user = userRepository.findByUsername(username)
+
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Section section = sectionRepository.findById(sectionId)
