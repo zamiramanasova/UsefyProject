@@ -58,7 +58,6 @@ public class CourseServiceImpl implements CourseService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         Course course = getCourseById(courseId);
-
         user.getEnrolledCourses().add(course);
         userRepository.save(user);
     }
