@@ -33,6 +33,7 @@ public class SectionProgressServiceImpl implements SectionProgressService {
                 .orElseThrow(() -> new RuntimeException("Section not found")).getSection();
 
         SectionProgress progress = SectionProgress.builder()
+
                 .user(user)
                 .section(section)
                 .completed(true)
