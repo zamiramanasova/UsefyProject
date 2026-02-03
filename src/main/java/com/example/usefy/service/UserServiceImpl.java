@@ -23,6 +23,7 @@ public class UserServiceImpl implements UserService {
 
     @PostConstruct
     public void logDataSource() throws Exception {
+
         System.out.println(">>> DATASOURCE URL = " +
                 dataSource.getConnection().getMetaData().getURL());
     }
