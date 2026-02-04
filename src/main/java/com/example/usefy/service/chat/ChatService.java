@@ -4,7 +4,6 @@ import com.example.usefy.model.User;
 import com.example.usefy.model.chat.ChatMessage;
 import com.example.usefy.model.chat.ChatSession;
 import com.example.usefy.model.course.Section;
-
 import java.util.List;
 
 public interface ChatService {
