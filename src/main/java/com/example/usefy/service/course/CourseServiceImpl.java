@@ -83,6 +83,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void completeSection(String username, Long sectionId) {
+
         var user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
