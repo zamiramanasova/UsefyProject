@@ -21,6 +21,7 @@ public class ChatRestController {
             @PathVariable Long sectionId,
             @AuthenticationPrincipal UserDetails principal,
             @RequestBody String message
+
     ) {
         var user = userService.findByUsername(principal.getUsername());
         var chat = chatService.getOrCreateSectionChat(user, sectionId);
