@@ -36,6 +36,7 @@ public class UserServiceImpl implements UserService {
         if (existing.isPresent()) {
             throw new IllegalArgumentException("Username already exists");
         }
+
         // Шифруем пароль
         String hashedPassword = passwordEncoder.encode(password);
 
