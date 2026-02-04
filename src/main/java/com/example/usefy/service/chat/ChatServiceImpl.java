@@ -89,6 +89,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public ChatMessage addUserMessage(Long chatSessionId, String content) {
+
         ChatSession chat = chatSessionRepository.findById(chatSessionId)
                 .orElseThrow(() -> new EntityNotFoundException("Chat not found"));
 
