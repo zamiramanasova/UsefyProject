@@ -49,6 +49,7 @@ public class WebAuthController {
     public String showLoginPage(@RequestParam(value = "error", required = false) String error,
                                 @RequestParam(value = "registered", required = false) String registered,
                                 Model model) {
+
         if (error != null) model.addAttribute("error", "Неверный логин или пароль");
         if (registered != null) model.addAttribute("message", "Регистрация прошла успешно — войдите.");
         return "login";
