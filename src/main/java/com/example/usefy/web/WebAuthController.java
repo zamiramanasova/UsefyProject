@@ -42,7 +42,6 @@ public class WebAuthController {
             bindingResult.rejectValue("username", "error.username", ex.getMessage());
             return "register";
         }
-
         return "redirect:/login?registered";
     }
 
