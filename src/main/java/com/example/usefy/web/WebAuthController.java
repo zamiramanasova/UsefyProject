@@ -31,6 +31,7 @@ public class WebAuthController {
             BindingResult bindingResult,
             Model model
     ) {
+
         if (bindingResult.hasErrors()) {
             return "register";
         }
