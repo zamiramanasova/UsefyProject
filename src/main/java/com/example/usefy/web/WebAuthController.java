@@ -56,5 +56,4 @@ public class WebAuthController {
         if (registered != null) model.addAttribute("message", "Регистрация прошла успешно — войдите.");
         return "login";
     }
-
 }
