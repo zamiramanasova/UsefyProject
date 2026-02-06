@@ -2,7 +2,6 @@ package com.example.usefy.web;
 
 import com.example.usefy.model.course.Course;
 import com.example.usefy.model.course.Section;
-import com.example.usefy.model.course.UserCourseProgress;
 import com.example.usefy.service.course.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
