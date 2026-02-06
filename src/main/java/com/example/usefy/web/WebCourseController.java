@@ -20,7 +20,6 @@ public class WebCourseController {
 
     private final CourseService courseService;
 
-
     /**
      * 1️⃣ Список всех курсов
      * GET /courses
