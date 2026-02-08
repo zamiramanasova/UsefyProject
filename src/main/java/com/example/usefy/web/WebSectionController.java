@@ -60,6 +60,7 @@ public class WebSectionController {
             @PathVariable Long sectionId,
             @AuthenticationPrincipal UserDetails principal,
             @RequestParam String question
+
     ) {
         var user = userService.findByUsername(principal.getUsername());
         var chat = chatService.getOrCreateSectionChat(user, sectionId);
