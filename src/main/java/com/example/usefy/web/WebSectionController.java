@@ -56,7 +56,6 @@ public class WebSectionController {
     }
 
 
-
     @PostMapping("/{sectionId}/ask")
     public String askAi(
             @PathVariable Long sectionId,
