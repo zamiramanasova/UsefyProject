@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class UsefyApplication {
+
     public static void main(String[] args) {
         SpringApplication.run(UsefyApplication.class, args);
     }
