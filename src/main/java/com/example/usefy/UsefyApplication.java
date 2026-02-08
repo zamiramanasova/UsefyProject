@@ -13,6 +13,7 @@ public class UsefyApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(UsefyApplication.class, args);
+
     }
 //    @Bean
 //    public CommandLineRunner testChat(
