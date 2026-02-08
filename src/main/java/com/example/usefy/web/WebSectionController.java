@@ -62,6 +62,7 @@ public class WebSectionController {
             @RequestParam String question
 
     ) {
+
         var user = userService.findByUsername(principal.getUsername());
         var chat = chatService.getOrCreateSectionChat(user, sectionId);
 
