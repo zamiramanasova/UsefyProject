@@ -26,6 +26,7 @@ public class WebSectionController {
             @AuthenticationPrincipal UserDetails principal,
             Model model
     ) {
+
         Section section = courseService.getSection(sectionId);
 
         if (principal == null) return "redirect:/login";
