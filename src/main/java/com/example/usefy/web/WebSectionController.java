@@ -52,6 +52,7 @@ public class WebSectionController {
         model.addAttribute("section", section);
 
         return "section";
+
     }
 
 
