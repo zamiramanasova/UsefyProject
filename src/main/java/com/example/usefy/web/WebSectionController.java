@@ -69,5 +69,6 @@ public class WebSectionController {
         chatService.addUserMessageAndAiReply(chat.getId(), question);
 
         return "redirect:/courses/sections/" + sectionId;
+
     }
 }
