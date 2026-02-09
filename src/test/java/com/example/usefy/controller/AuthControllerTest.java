@@ -121,5 +121,4 @@ class AuthControllerTest {
         verify(userService, never()).registerUser(any(), any(), any());
 
     }
-
 }
