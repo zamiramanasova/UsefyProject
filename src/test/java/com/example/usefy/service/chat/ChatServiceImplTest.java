@@ -58,7 +58,6 @@ class ChatServiceImplTest {
     @Autowired
     private CourseRepository courseRepository;
 
-
     @BeforeEach
     void setUp() {
 
