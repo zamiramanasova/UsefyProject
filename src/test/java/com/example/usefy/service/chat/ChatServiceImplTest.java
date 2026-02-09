@@ -50,6 +50,7 @@ class ChatServiceImplTest {
     private User user;
 
     private Section section;
+
     private Course course;
 
     @Autowired
