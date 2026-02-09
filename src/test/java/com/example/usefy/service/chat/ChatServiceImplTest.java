@@ -90,7 +90,6 @@ class ChatServiceImplTest {
     }
 
 
-
     // -----------------------------
     // getOrCreateSectionChat
     // -----------------------------
