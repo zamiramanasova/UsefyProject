@@ -6,6 +6,6 @@ class WelcomePageTest {
 
     @Test
     void printWelcome() {
-        System.out.println("Welcome to");
+        System.out.println("Welcome to my project)");
     }
 }
