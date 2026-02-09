@@ -79,6 +79,7 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Login successful"));
     }
+
     @Test
     void register_shouldReturnBadRequest_whenUsernameIsEmpty() throws Exception {
         UserRegistrationRequest request = new UserRegistrationRequest();
