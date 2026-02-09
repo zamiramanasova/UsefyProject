@@ -119,6 +119,5 @@ class AuthControllerTest {
                 .andExpect(status().isBadRequest());
 
         verify(userService, never()).registerUser(any(), any(), any());
-
     }
 }
