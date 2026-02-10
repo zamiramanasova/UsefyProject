@@ -92,7 +92,6 @@ class ChatServiceImplTest {
     // -----------------------------
     // getOrCreateSectionChat
     // -----------------------------
-
     @Test
     void shouldCreateChatIfNotExists() {
         ChatSession chat = chatService.getOrCreateSectionChat(user, section.getId());
