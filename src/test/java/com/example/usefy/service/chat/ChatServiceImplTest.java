@@ -101,7 +101,6 @@ class ChatServiceImplTest {
         assertEquals(section.getId(), chat.getSection().getId());
     }
 
-
     @Test
     void shouldReturnSameChatForSameUserAndSection() {
         ChatSession first = chatService.getOrCreateSectionChat(user, 1L);
