@@ -89,7 +89,6 @@ class ChatServiceImplTest {
         )).thenReturn("AI test response");
     }
 
-
     // -----------------------------
     // getOrCreateSectionChat
     // -----------------------------
