@@ -136,7 +136,6 @@ class ChatServiceImplTest {
     // -----------------------------
     // getChatMessages
     // -----------------------------
-
     @Test
     void shouldReturnMessagesInCorrectOrder() {
         ChatSession chat = chatService.getOrCreateSectionChat(user, 1L);
