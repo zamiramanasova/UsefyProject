@@ -112,7 +112,6 @@ class ChatServiceImplTest {
     // -----------------------------
     // addUserMessageAndAiReply
     // -----------------------------
-
     @Test
     void shouldSaveUserAndAiMessages() {
         ChatSession chat = chatService.getOrCreateSectionChat(user, 1L);
