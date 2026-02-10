@@ -74,5 +74,4 @@ class WebCourseControllerTest {
                 .andExpect(model().attributeExists("course"))
                 .andExpect(model().attributeExists("sections"));
     }
-
 }
