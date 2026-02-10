@@ -9,5 +9,4 @@ class UsefyApplicationTests {
     @Test
     void contextLoads() {
     }
-
 }
