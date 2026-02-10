@@ -31,7 +31,6 @@ class WebCourseControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-
     @Test
     @WithMockUser
     void authenticated_shouldSeeCourses() throws Exception {
