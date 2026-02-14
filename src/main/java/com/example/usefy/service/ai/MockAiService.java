@@ -14,5 +14,4 @@ public class MockAiService implements AiService {
                 + "Вопрос: " + question + "\n"
                 + "Контекст: " + String.join(" | ", context);
     }
-
 }
