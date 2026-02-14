@@ -37,5 +37,4 @@ public class User {
     )
 
     private Set<Course> enrolledCourses = new HashSet<>();
-
 }
