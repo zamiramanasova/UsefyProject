@@ -128,7 +128,6 @@ public class ChatServiceImpl implements ChatService {
                 });
     }
 
-
     @Override
     public ChatSession getOrCreateSectionChat(User user, Section section) {
 
