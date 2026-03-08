@@ -1,18 +1,23 @@
 package com.example.usefy.service.chat;
 
+import com.example.usefy.dto.ChatMessageDto;
+import com.example.usefy.dto.ChatSessionDetailDto;
+import com.example.usefy.dto.ChatSessionDto;
 import com.example.usefy.model.User;
 import com.example.usefy.model.chat.ChatMessage;
 import com.example.usefy.model.chat.ChatSession;
 import com.example.usefy.model.chat.MessageRole;
 import com.example.usefy.model.course.Section;
+import com.example.usefy.repository.UserRepository;
 import com.example.usefy.repository.chat.ChatMessageRepository;
 import com.example.usefy.repository.chat.ChatSessionRepository;
 import com.example.usefy.repository.course.SectionRepository;
 import com.example.usefy.service.ai.AiService;
-import com.example.usefy.service.course.CourseService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -23,52 +28,48 @@ public class ChatServiceImpl implements ChatService {
 
     private final ChatSessionRepository chatSessionRepository;
     private final ChatMessageRepository chatMessageRepository;
-    private final AiService aiService;
+    private final UserRepository userRepository;
     private final SectionRepository sectionRepository;
-    private final CourseService courseService;
+    private final AiService aiService;
 
+    // ============ СУЩЕСТВУЮЩИЕ МЕТОДЫ ============
 
     @Override
+    @Transactional
     public void addUserMessageAndAiReply(Long chatId, String userMessage) {
-
         ChatSession chat = chatSessionRepository.findById(chatId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat not found"));
 
-        // 1️⃣ сохраняем USER сообщение
+        // Сохраняем сообщение пользователя
         ChatMessage userMsg = ChatMessage.builder()
                 .chatSession(chat)
                 .content(userMessage)
                 .role(MessageRole.USER)
                 .build();
-
         chatMessageRepository.save(userMsg);
 
-        // 2️⃣ получаем последние 5 сообщений для контекста
+        // Получаем контекст (последние 5 сообщений)
         List<String> context = chatMessageRepository
                 .findTop5ByChatSessionOrderByCreatedAtDesc(chat)
                 .stream()
                 .map(ChatMessage::getContent)
                 .toList();
 
-        // 3️⃣ ДОБАВЛЯЕМ КОНТЕНТ УРОКА
+        // Получаем текст урока
         String lessonText = "";
         if (chat.getSection() != null) {
             lessonText = chat.getSection().getContent();
         }
 
-        // 4️⃣ AI ответ
-        String aiAnswer = aiService.generateAnswer(
-                userMessage,
-                context,
-                lessonText
-        );
+        // Получаем ответ от AI
+        String aiAnswer = aiService.generateAnswer(userMessage, context, lessonText);
 
+        // Сохраняем ответ AI
         ChatMessage aiMsg = ChatMessage.builder()
                 .chatSession(chat)
                 .content(aiAnswer)
                 .role(MessageRole.AI)
                 .build();
-
         chatMessageRepository.save(aiMsg);
     }
 
@@ -78,7 +79,6 @@ public class ChatServiceImpl implements ChatService {
                 .user(user)
                 .title(title)
                 .build();
-
         return chatSessionRepository.save(chat);
     }
 
@@ -89,7 +89,6 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public ChatMessage addUserMessage(Long chatSessionId, String content) {
-
         ChatSession chat = chatSessionRepository.findById(chatSessionId)
                 .orElseThrow(() -> new EntityNotFoundException("Chat not found"));
 
@@ -98,7 +97,6 @@ public class ChatServiceImpl implements ChatService {
                 .content(content)
                 .role(MessageRole.USER)
                 .build();
-
         return chatMessageRepository.save(message);
     }
 
@@ -106,39 +104,112 @@ public class ChatServiceImpl implements ChatService {
     public List<ChatMessage> getChatMessages(Long chatSessionId) {
         ChatSession chat = chatSessionRepository.findById(chatSessionId)
                 .orElseThrow(() -> new EntityNotFoundException("Chat not found"));
-
         return chatMessageRepository.findByChatSessionOrderByCreatedAt(chat);
     }
 
     @Override
     public ChatSession getOrCreateSectionChat(User user, Long sectionId) {
-
         Section section = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new IllegalArgumentException("Section not found"));
-
-        return chatSessionRepository.findByUserAndSection(user, section)
-                .orElseGet(() -> {
-                    ChatSession chat = ChatSession.builder()
-                            .user(user)
-                            .section(section)
-                            .title("Чат по уроку " + section.getOrderIndex())
-                            .build();
-
-                    return chatSessionRepository.save(chat);
-                });
+        return getOrCreateSectionChat(user, section);
     }
 
     @Override
     public ChatSession getOrCreateSectionChat(User user, Section section) {
-
         return chatSessionRepository.findByUserAndSection(user, section)
                 .orElseGet(() -> chatSessionRepository.save(
                         ChatSession.builder()
                                 .user(user)
                                 .section(section)
-                                .title("Chat for section " + section.getId())
+                                .title("Чат по уроку " + section.getOrderIndex())
                                 .build()
                 ));
     }
 
+    // ============ НОВЫЕ МЕТОДЫ ============
+
+    @Override
+    public List<ChatSessionDto> getUserChatSessions(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+        List<ChatSession> sessions = chatSessionRepository.findByUserOrderByCreatedAtDesc(user);
+
+        return sessions.stream()
+                .map(session -> {
+                    List<ChatMessage> messages = chatMessageRepository
+                            .findByChatSessionOrderByCreatedAt(session);
+
+                    String lastMessage = messages.isEmpty() ? "" :
+                            messages.get(messages.size() - 1).getContent();
+                    String preview = lastMessage.length() > 30 ?
+                            lastMessage.substring(0, 30) + "..." : lastMessage;
+
+                    return new ChatSessionDto(
+                            session.getId(),
+                            session.getTitle(),
+                            session.getCreatedAt(),
+                            session.getSection() != null ? session.getSection().getId() : null,
+                            session.getSection() != null ?
+                                    "Урок " + session.getSection().getOrderIndex() : "Общий чат",
+                            messages.size(),
+                            preview
+                    );
+                })
+                .toList();
+    }
+
+    @Override
+    public ChatSessionDetailDto getChatSessionDetail(Long sessionId, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+        ChatSession session = chatSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Chat session not found: " + sessionId));
+
+        // Проверяем, что чат принадлежит пользователю
+        if (!session.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Access denied to chat session: " + sessionId);
+        }
+
+        List<ChatMessage> messages = chatMessageRepository
+                .findByChatSessionOrderByCreatedAt(session);
+
+        List<ChatMessageDto> messageDtos = messages.stream()
+                .map(msg -> new ChatMessageDto(
+                        msg.getId(),
+                        msg.getContent(),
+                        msg.getRole().name(),
+                        msg.getCreatedAt()
+                ))
+                .toList();
+
+        return new ChatSessionDetailDto(
+                session.getId(),
+                session.getTitle(),
+                session.getCreatedAt(),
+                session.getSection() != null ? session.getSection().getId() : null,
+                session.getSection() != null ?
+                        "Урок " + session.getSection().getOrderIndex() : "Общий чат",
+                messageDtos
+        );
+    }
+
+    @Override
+    @Transactional
+    public void deleteChatSession(Long sessionId, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+        ChatSession session = chatSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Chat session not found: " + sessionId));
+
+        // Проверяем, что чат принадлежит пользователю
+        if (!session.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Access denied to chat session: " + sessionId);
+        }
+
+        // Удаляем чат (сообщения удалятся каскадно благодаря orphanRemoval = true)
+        chatSessionRepository.delete(session);
+    }
 }
