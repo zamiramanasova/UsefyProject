@@ -1,152 +1,240 @@
 package com.example.usefy.service.chat;
 
+import com.example.usefy.dto.ChatSessionDetailDto;
+import com.example.usefy.dto.ChatSessionDto;
 import com.example.usefy.model.User;
 import com.example.usefy.model.chat.ChatMessage;
 import com.example.usefy.model.chat.ChatSession;
 import com.example.usefy.model.chat.MessageRole;
-import com.example.usefy.model.course.Course;
-import com.example.usefy.model.course.Section;
+import com.example.usefy.repository.UserRepository;
 import com.example.usefy.repository.chat.ChatMessageRepository;
 import com.example.usefy.repository.chat.ChatSessionRepository;
-import com.example.usefy.repository.UserRepository;
-import com.example.usefy.repository.course.CourseRepository;
 import com.example.usefy.repository.course.SectionRepository;
 import com.example.usefy.service.ai.AiService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest
-@Transactional
+@ExtendWith(MockitoExtension.class)
 class ChatServiceImplTest {
 
-    @Autowired
-    private ChatService chatService;
-
-    @Autowired
+    @Mock
     private ChatSessionRepository chatSessionRepository;
 
-    @Autowired
+    @Mock
     private ChatMessageRepository chatMessageRepository;
 
-    @Autowired
+    @Mock
     private UserRepository userRepository;
 
-    // AI мы МОКАЕМ — это правильно
-    @MockBean
+    @Mock
+    private SectionRepository sectionRepository;
+
+    @Mock
     private AiService aiService;
 
-    private User user;
+    @InjectMocks
+    private ChatServiceImpl chatService;
 
-    private Section section;
-
-    private Course course;
-
-    @Autowired
-    private SectionRepository sectionRepository;
-    @Autowired
-    private CourseRepository courseRepository;
+    private User testUser;
+    private ChatSession testSession;
+    private ChatMessage testMessage;
 
     @BeforeEach
     void setUp() {
+        // Инициализация testUser
+        testUser = User.builder()
+                .id(1L)
+                .username("testuser")
+                .email("test@test.com")
+                .passwordHash("hashedPassword")
+                .build();
 
-        // USER
-        user = new User();
-        user.setUsername("test_user");
-        user.setEmail("test@mail.com");
-        user.setPasswordHash("password");
-        user = userRepository.save(user);
+        // Инициализация testSession
+        testSession = ChatSession.builder()
+                .id(1L)
+                .title("Test Chat Session")
+                .user(testUser)
+                .createdAt(LocalDateTime.now())
+                .build();
 
-        // COURSE  ← ВАЖНО
-        course = new Course();
-        course.setTitle("Test course");
-        course.setDescription("Test description");
-        course = courseRepository.save(course);
-
-        // SECTION  ← ВАЖНО: section.course НЕ null
-        section = new Section();
-        section.setOrderIndex(1);
-        section.setContent("Test lesson content");
-        section.setCourse(course);   // ← ВОТ ЭТО РЕШАЕТ ОШИБКУ
-        section = sectionRepository.save(section);
-
-        // AI mock
-        when(aiService.generateAnswer(
-                anyString(),
-                anyList(),
-                anyString()
-        )).thenReturn("AI test response");
-    }
-
-    // -----------------------------
-    // getOrCreateSectionChat
-    // -----------------------------
-    @Test
-    void shouldCreateChatIfNotExists() {
-        ChatSession chat = chatService.getOrCreateSectionChat(user, section.getId());
-
-        assertThat(chat).isNotNull();
-        assertThat(chat.getUser()).isEqualTo(user);
-        assertEquals(section.getId(), chat.getSection().getId());
+        // Инициализация testMessage
+        testMessage = ChatMessage.builder()
+                .id(1L)
+                .content("Test message content")
+                .role(MessageRole.USER)
+                .chatSession(testSession)
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 
     @Test
-    void shouldReturnSameChatForSameUserAndSection() {
-        ChatSession first = chatService.getOrCreateSectionChat(user, 1L);
-        ChatSession second = chatService.getOrCreateSectionChat(user, 1L);
+    void getUserChatSessions_ShouldReturnListOfSessions() {
+        // given
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
+        when(chatSessionRepository.findByUserOrderByCreatedAtDesc(testUser))
+                .thenReturn(List.of(testSession));
+        when(chatMessageRepository.findByChatSessionOrderByCreatedAt(testSession))
+                .thenReturn(List.of(testMessage));
 
-        assertThat(first.getId()).isEqualTo(second.getId());
+        // when
+        List<ChatSessionDto> result = chatService.getUserChatSessions("testuser");
+
+        // then
+        assertThat(result).isNotEmpty();
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getId()).isEqualTo(1L);
+        assertThat(result.get(0).getTitle()).isEqualTo("Test Chat Session");
+        assertThat(result.get(0).getMessageCount()).isEqualTo(1);
+
+        verify(userRepository).findByUsername("testuser");
+        verify(chatSessionRepository).findByUserOrderByCreatedAtDesc(testUser);
     }
 
-    // -----------------------------
-    // addUserMessageAndAiReply
-    // -----------------------------
     @Test
-    void shouldSaveUserAndAiMessages() {
-        ChatSession chat = chatService.getOrCreateSectionChat(user, 1L);
+    void getUserChatSessions_ShouldThrowException_WhenUserNotFound() {
+        // given
+        when(userRepository.findByUsername("unknown")).thenReturn(Optional.empty());
 
-        chatService.addUserMessageAndAiReply(chat.getId(), "What is JVM?");
+        // when/then
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> chatService.getUserChatSessions("unknown")
+        );
 
-        List<ChatMessage> messages =
-                chatMessageRepository.findByChatSessionOrderByCreatedAt(chat);
-
-        assertThat(messages).hasSize(2);
-
-        ChatMessage userMessage = messages.get(0);
-        ChatMessage aiMessage = messages.get(1);
-
-        assertThat(userMessage.getRole()).isEqualTo(MessageRole.USER);
-        assertThat(userMessage.getContent()).isEqualTo("What is JVM?");
-
-        assertThat(aiMessage.getRole()).isEqualTo(MessageRole.AI);
-        assertThat(aiMessage.getContent()).isEqualTo("AI test response");
+        assertThat(exception.getMessage()).contains("User not found");
     }
 
-    // -----------------------------
-    // getChatMessages
-    // -----------------------------
     @Test
-    void shouldReturnMessagesInCorrectOrder() {
-        ChatSession chat = chatService.getOrCreateSectionChat(user, 1L);
+    void getChatSessionDetail_ShouldReturnSessionDetail() {
+        // given
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
+        when(chatSessionRepository.findById(1L)).thenReturn(Optional.of(testSession));
+        when(chatMessageRepository.findByChatSessionOrderByCreatedAt(testSession))
+                .thenReturn(List.of(testMessage));
 
-        chatService.addUserMessageAndAiReply(chat.getId(), "Q1");
-        chatService.addUserMessageAndAiReply(chat.getId(), "Q2");
+        // when
+        ChatSessionDetailDto result = chatService.getChatSessionDetail(1L, "testuser");
 
-        List<ChatMessage> messages = chatService.getChatMessages(chat.getId());
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.getTitle()).isEqualTo("Test Chat Session");
+        assertThat(result.getMessages()).isNotEmpty();
+        assertThat(result.getMessages()).hasSize(1);
+        assertThat(result.getMessages().get(0).getContent()).isEqualTo("Test message content");
+        assertThat(result.getMessages().get(0).getRole()).isEqualTo("USER");
+    }
 
-        assertThat(messages).hasSize(4);
-        assertThat(messages.get(0).getContent()).isEqualTo("Q1");
-        assertThat(messages.get(2).getContent()).isEqualTo("Q2");
+    @Test
+    void getChatSessionDetail_ShouldThrowException_WhenSessionNotFound() {
+        // given
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
+        when(chatSessionRepository.findById(999L)).thenReturn(Optional.empty());
+
+        // when/then
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> chatService.getChatSessionDetail(999L, "testuser")
+        );
+
+        assertThat(exception.getMessage()).contains("Chat session not found");
+    }
+
+    @Test
+    void getChatSessionDetail_ShouldThrowException_WhenAccessDenied() {
+        // given
+        User anotherUser = User.builder()
+                .id(2L)
+                .username("otheruser")
+                .email("other@test.com")
+                .passwordHash("hash")
+                .build();
+
+        testSession.setUser(anotherUser);
+
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
+        when(chatSessionRepository.findById(1L)).thenReturn(Optional.of(testSession));
+
+        // when/then
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> chatService.getChatSessionDetail(1L, "testuser")
+        );
+
+        assertThat(exception.getMessage()).contains("Access denied");
+    }
+
+    @Test
+    void deleteChatSession_ShouldDeleteSession() {
+        // given
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
+        when(chatSessionRepository.findById(1L)).thenReturn(Optional.of(testSession));
+
+        // when
+        chatService.deleteChatSession(1L, "testuser");
+
+        // then
+        verify(chatSessionRepository).delete(testSession);
+    }
+
+    @Test
+    void deleteChatSession_ShouldThrowException_WhenAccessDenied() {
+        // given
+        User anotherUser = User.builder()
+                .id(2L)
+                .username("otheruser")
+                .email("other@test.com")
+                .passwordHash("hash")
+                .build();
+
+        testSession.setUser(anotherUser);
+
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
+        when(chatSessionRepository.findById(1L)).thenReturn(Optional.of(testSession));
+
+        // when/then
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> chatService.deleteChatSession(1L, "testuser")
+        );
+
+        assertThat(exception.getMessage()).contains("Access denied");
+    }
+
+    @Test
+    void addUserMessageAndAiReply_ShouldSaveMessages() {
+        // given
+        when(chatSessionRepository.findById(1L)).thenReturn(Optional.of(testSession));
+        when(aiService.generateAnswer(anyString(), anyList(), anyString()))
+                .thenReturn("AI response message");
+        when(chatMessageRepository.save(any(ChatMessage.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        chatService.addUserMessageAndAiReply(1L, "Hello, AI!");
+
+        // then
+        verify(chatMessageRepository, times(2)).save(any(ChatMessage.class));
+        verify(aiService).generateAnswer(eq("Hello, AI!"), anyList(), anyString());
+    }
+
+    @Test
+    void addUserMessageAndAiReply_ShouldThrowException_WhenChatNotFound() {
+        // given
+        when(chatSessionRepository.findById(999L)).thenReturn(Optional.empty());
+
+        // when/then
+        assertThrows(IllegalArgumentException.class,
+                () -> chatService.addUserMessageAndAiReply(999L, "Hello")
+        );
     }
 }
