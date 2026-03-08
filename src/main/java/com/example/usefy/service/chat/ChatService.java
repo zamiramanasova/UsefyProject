@@ -1,5 +1,7 @@
 package com.example.usefy.service.chat;
 
+import com.example.usefy.dto.ChatSessionDetailDto;
+import com.example.usefy.dto.ChatSessionDto;
 import com.example.usefy.model.User;
 import com.example.usefy.model.chat.ChatMessage;
 import com.example.usefy.model.chat.ChatSession;
@@ -22,5 +24,9 @@ public interface ChatService {
 
     ChatSession getOrCreateSectionChat(User user, Section section);
 
+    List<ChatSessionDto> getUserChatSessions(String username);
 
+    ChatSessionDetailDto getChatSessionDetail(Long sessionId, String username);
+
+    void deleteChatSession(Long sessionId, String username); // опционально
 }
