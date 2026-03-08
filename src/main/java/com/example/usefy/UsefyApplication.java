@@ -1,6 +1,10 @@
 package com.example.usefy;
 
 import com.example.usefy.model.User;
+import com.example.usefy.model.course.Course;
+import com.example.usefy.model.course.Section;
+import com.example.usefy.repository.course.CourseRepository;
+import com.example.usefy.repository.course.SectionRepository;
 import com.example.usefy.service.UserService;
 import com.example.usefy.service.chat.ChatService;
 import org.springframework.boot.CommandLineRunner;
@@ -15,6 +19,7 @@ public class UsefyApplication {
         SpringApplication.run(UsefyApplication.class, args);
 
     }
+
 //    @Bean
 //    public CommandLineRunner testChat(
 //            UserService userService,
@@ -42,5 +47,6 @@ public class UsefyApplication {
 //            System.out.println("Message added");
 //        };
 //    }
+
 }
 
