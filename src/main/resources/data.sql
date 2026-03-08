@@ -1,72 +1,24 @@
--- ===== COURSES =====
--- Вставляем курсы только если их нет
-INSERT INTO courses (title, description)
-SELECT 'Java Basics', 'Основы Java'
-    WHERE NOT EXISTS (SELECT 1 FROM courses WHERE title = 'Java Basics');
+-- ОЧИЩАЕМ ТАБЛИЦЫ (если нужно)
+DELETE FROM sections;
+DELETE FROM courses;
 
-INSERT INTO courses (title, description)
-SELECT 'Spring Boot', 'Разработка приложений'
-    WHERE NOT EXISTS (SELECT 1 FROM courses WHERE title = 'Spring Boot');
+-- ===== СБРАСЫВАЕМ СЧЁТЧИКИ ID (для PostgreSQL) =====
+ALTER SEQUENCE courses_id_seq RESTART WITH 1;
+ALTER SEQUENCE sections_id_seq RESTART WITH 1;
+
+-- ===== COURSES =====
+INSERT INTO courses (title, description) VALUES
+                                             ('Java Basics', 'Основы Java'),
+                                             ('Spring Boot', 'Разработка приложений');
 
 -- ===== SECTIONS FOR JAVA BASICS =====
--- Вставляем секции для Java Basics
-INSERT INTO sections (content, order_index, course_id)
-SELECT 'Что такое JVM, JDK и JRE', 1, id
-FROM courses
-WHERE title = 'Java Basics'
-  AND NOT EXISTS (
-    SELECT 1 FROM sections s
-    WHERE s.course_id = (SELECT id FROM courses WHERE title = 'Java Basics')
-      AND s.order_index = 1
-);
-
-INSERT INTO sections (content, order_index, course_id)
-SELECT 'Типы данных в Java', 2, id
-FROM courses
-WHERE title = 'Java Basics'
-  AND NOT EXISTS (
-    SELECT 1 FROM sections s
-    WHERE s.course_id = (SELECT id FROM courses WHERE title = 'Java Basics')
-      AND s.order_index = 2
-);
-
-INSERT INTO sections (content, order_index, course_id)
-SELECT 'Условия и циклы', 3, id
-FROM courses
-WHERE title = 'Java Basics'
-  AND NOT EXISTS (
-    SELECT 1 FROM sections s
-    WHERE s.course_id = (SELECT id FROM courses WHERE title = 'Java Basics')
-      AND s.order_index = 3
-);
+INSERT INTO sections (content, order_index, course_id) VALUES
+                                                           ('Что такое JVM, JDK и JRE — это фундаментальные понятия Java. JVM выполняет байт-код, JDK включает инструменты разработки, JRE — среда выполнения.', 1, 1),
+                                                           ('В Java есть примитивные типы: int, double, boolean и ссылочные типы (классы, интерфейсы, массивы).', 2, 1),
+                                                           ('Условные операторы if-else и циклы for, while позволяют управлять потоком выполнения программы.', 3, 1);
 
 -- ===== SECTIONS FOR SPRING BOOT =====
-INSERT INTO sections (content, order_index, course_id)
-SELECT 'Что такое Spring Boot', 1, id
-FROM courses
-WHERE title = 'Spring Boot'
-  AND NOT EXISTS (
-    SELECT 1 FROM sections s
-    WHERE s.course_id = (SELECT id FROM courses WHERE title = 'Spring Boot')
-      AND s.order_index = 1
-);
-
-INSERT INTO sections (content, order_index, course_id)
-SELECT 'Controllers и REST', 2, id
-FROM courses
-WHERE title = 'Spring Boot'
-  AND NOT EXISTS (
-    SELECT 1 FROM sections s
-    WHERE s.course_id = (SELECT id FROM courses WHERE title = 'Spring Boot')
-      AND s.order_index = 2
-);
-
-INSERT INTO sections (content, order_index, course_id)
-SELECT 'Spring Data JPA', 3, id
-FROM courses
-WHERE title = 'Spring Boot'
-  AND NOT EXISTS (
-    SELECT 1 FROM sections s
-    WHERE s.course_id = (SELECT id FROM courses WHERE title = 'Spring Boot')
-      AND s.order_index = 3
-);
+INSERT INTO sections (content, order_index, course_id) VALUES
+                                                           ('Spring Boot — это инструмент для быстрой разработки Spring приложений с минимальной конфигурацией.', 1, 2),
+                                                           ('Контроллеры обрабатывают HTTP запросы и возвращают ответы. @RestController и @RequestMapping — основные аннотации.', 2, 2),
+                                                           ('Spring Data JPA упрощает работу с базами данных, предоставляя готовые реализации CRUD операций.', 3, 2);
