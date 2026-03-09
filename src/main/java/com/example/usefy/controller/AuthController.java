@@ -4,12 +4,14 @@ import com.example.usefy.model.User;
 import com.example.usefy.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -19,21 +21,21 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(
-            @Valid @RequestBody UserRegistrationRequest request,
-            BindingResult bindingResult
-    ) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+    public ResponseEntity<?> register(@Valid @RequestBody UserRegistrationRequest request) {
+        log.info("POST /api/auth/register - регистрация пользователя: {}", request.getUsername());
+
+        try {
+            User user = userService.registerUser(
+                    request.getUsername(),
+                    request.getPassword(),
+                    request.getEmail()
+            );
+            log.info("Пользователь {} успешно зарегистрирован", request.getUsername());
+            return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        } catch (Exception e) {
+            log.error("Ошибка регистрации пользователя {}: {}", request.getUsername(), e.getMessage());
+            throw e;
         }
-
-        User user = userService.registerUser(
-                request.getUsername(),
-                request.getPassword(),
-                request.getEmail()
-        );
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @PostMapping("/login")

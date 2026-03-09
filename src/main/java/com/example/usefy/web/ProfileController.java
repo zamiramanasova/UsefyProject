@@ -3,12 +3,14 @@ package com.example.usefy.web;
 import com.example.usefy.model.User;
 import com.example.usefy.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.security.Principal;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class ProfileController {
