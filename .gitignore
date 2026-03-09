@@ -1,21 +1,17 @@
 # ===== Maven =====
 target/
 .mvn/wrapper/maven-wrapper.jar
-
 # ===== Logs =====
 logs/
 *.log
-
 # ===== OS =====
 .DS_Store
 Thumbs.db
-
 # ===== IntelliJ IDEA =====
 .idea/
 *.iml
 *.iws
 *.ipr
-
 # ===== Eclipse / STS =====
 .apt_generated
 .classpath
@@ -24,12 +20,59 @@ Thumbs.db
 .settings
 .springBeans
 .sts4-cache
-
 # ===== NetBeans =====
 nbproject/private/
 nbbuild/
 dist/
 nbdist/
-
 # ===== VS Code =====
 .vscode/
+# ============ СПЕЦИФИЧНО ДЛЯ ТВОЕГО ПРОЕКТА ============
+
+# Логи приложения (у тебя уже есть logs/, добавь уточнение)
+logs/
+*.log
+**/logs/
+
+# Временные файлы
+todo.txt
+temp/
+tmp/
+
+# Файлы IDE (у тебя уже есть idea/, добавь ещё)
+.idea/
+*.iml
+.iws
+.ipr
+.classpath
+.project
+.settings/
+.factorypath
+.springBeans
+
+# Сборка и зависимоти
+target/
+dependency-reduced-pom.xml
+**/target/
+
+# Базы данных (если используешь локальные файлы БД)
+*.db
+*.h2.db
+*.mv.db
+
+# Системные файлы (у тебя уже есть)
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Локальные настройки (важно!)
+application-local.properties
+application-dev.properties
+application-secret.properties
+
+# Файлы с паролями (никогда не коммитить!)
+*.secret
+secrets/
+
+todo.txt                 # у тебя сейчас не добавлен
+application-local.properties  # если создашь локальные настройки
