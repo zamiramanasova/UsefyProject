@@ -15,11 +15,13 @@ import com.example.usefy.repository.course.SectionRepository;
 import com.example.usefy.service.ai.AiService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
@@ -37,41 +39,53 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public void addUserMessageAndAiReply(Long chatId, String userMessage) {
-        ChatSession chat = chatSessionRepository.findById(chatId)
-                .orElseThrow(() -> new IllegalArgumentException("Chat not found"));
+        // ✅ ВАЖНО: вход в метод
+        log.info("Добавление сообщения в чат {}", chatId);
 
-        // Сохраняем сообщение пользователя
-        ChatMessage userMsg = ChatMessage.builder()
-                .chatSession(chat)
-                .content(userMessage)
-                .role(MessageRole.USER)
-                .build();
-        chatMessageRepository.save(userMsg);
+        try {
+            ChatSession chat = chatSessionRepository.findById(chatId)
+                    .orElseThrow(() -> {
+                        log.error("Чат {} не найден", chatId);
+                        return new IllegalArgumentException("Chat not found");
+                    });
 
-        // Получаем контекст (последние 5 сообщений)
-        List<String> context = chatMessageRepository
-                .findTop5ByChatSessionOrderByCreatedAtDesc(chat)
-                .stream()
-                .map(ChatMessage::getContent)
-                .toList();
+            // Сохраняем сообщение пользователя
+            ChatMessage userMsg = ChatMessage.builder()
+                    .chatSession(chat)
+                    .content(userMessage)
+                    .role(MessageRole.USER)
+                    .build();
+            chatMessageRepository.save(userMsg);
 
-        // Получаем текст урока
-        String lessonText = "";
-        if (chat.getSection() != null) {
-            lessonText = chat.getSection().getContent();
+            // Получаем контекст
+            List<String> context = chatMessageRepository
+                    .findTop5ByChatSessionOrderByCreatedAtDesc(chat)
+                    .stream()
+                    .map(ChatMessage::getContent)
+                    .toList();
+
+            // Получаем текст урока
+            String lessonText = chat.getSection() != null ? chat.getSection().getContent() : "";
+
+            // Получаем ответ от AI
+            String aiAnswer = aiService.generateAnswer(userMessage, context, lessonText);
+
+            // Сохраняем ответ AI
+            ChatMessage aiMsg = ChatMessage.builder()
+                    .chatSession(chat)
+                    .content(aiAnswer)
+                    .role(MessageRole.AI)
+                    .build();
+            chatMessageRepository.save(aiMsg);
+
+            log.info("Сообщение обработано для чата {}", chatId);
+
+        } catch (Exception e) {
+            log.error("Ошибка при обработке сообщения для чата {}: {}", chatId, e.getMessage());
+            throw e;
         }
-
-        // Получаем ответ от AI
-        String aiAnswer = aiService.generateAnswer(userMessage, context, lessonText);
-
-        // Сохраняем ответ AI
-        ChatMessage aiMsg = ChatMessage.builder()
-                .chatSession(chat)
-                .content(aiAnswer)
-                .role(MessageRole.AI)
-                .build();
-        chatMessageRepository.save(aiMsg);
     }
+
 
     @Override
     public ChatSession createChat(User user, String title) {
@@ -136,12 +150,15 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    @Transactional
     public ChatSession createNewSectionChat(User user, Long sectionId) {
-        Section section = sectionRepository.findById(sectionId)
-                .orElseThrow(() -> new EntityNotFoundException("Section not found with id: " + sectionId));
+        log.info("Создание чата для пользователя {} в секции {}", user.getUsername(), sectionId);
 
-        // Подсчитываем, сколько уже чатов у пользователя в этой секции
+        Section section = sectionRepository.findById(sectionId)
+                .orElseThrow(() -> {
+                    log.error("Секция {} не найдена", sectionId);
+                    return new EntityNotFoundException("Section not found");
+                });
+
         List<ChatSession> existingChats = chatSessionRepository
                 .findByUserAndSectionOrderByCreatedAtDesc(user, section);
 
@@ -153,8 +170,12 @@ public class ChatServiceImpl implements ChatService {
                 .title(title)
                 .build();
 
-        return chatSessionRepository.save(newChat);
+        ChatSession saved = chatSessionRepository.save(newChat);
+        log.info("Чат {} создан", saved.getId());
+
+        return saved;
     }
+
 
     @Override
     public List<ChatSessionDto> getSectionChats(String username, Long sectionId) {
@@ -234,8 +255,9 @@ public class ChatServiceImpl implements ChatService {
         ChatSession session = chatSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Chat session not found: " + sessionId));
 
-        // Проверяем, что чат принадлежит пользователю
         if (!session.getUser().getId().equals(user.getId())) {
+            log.warn("Попытка доступа к чужому чату! Пользователь: {}, владелец: {}",
+                    username, session.getUser().getUsername());
             throw new RuntimeException("Access denied to chat session: " + sessionId);
         }
 
@@ -262,16 +284,22 @@ public class ChatServiceImpl implements ChatService {
         );
     }
 
+
     @Override
     @Transactional
     public void deleteChatSession(Long sessionId, String username) {
+        log.info("Удаление чата {} пользователем {}", sessionId, username);
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
 
-        // Используем новый метод репозитория
         ChatSession session = chatSessionRepository.findByIdAndUser(sessionId, user)
-                .orElseThrow(() -> new RuntimeException("Chat session not found or access denied: " + sessionId));
+                .orElseThrow(() -> {
+                    log.warn("Чат {} не найден или не принадлежит пользователю {}", sessionId, username);
+                    return new RuntimeException("Chat session not found: " + sessionId);
+                });
 
         chatSessionRepository.delete(session);
+        log.info("Чат {} удалён", sessionId);
     }
 }
