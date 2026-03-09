@@ -11,11 +11,13 @@ import com.example.usefy.repository.course.UserCourseProgressRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
@@ -34,9 +36,10 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Course getCourseById(Long id) {
         return courseRepository.findById(id)
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Course not found with id=" + id)
-                );
+                .orElseThrow(() -> {
+                    log.warn("Курс с ID {} не найден", id);
+                    return new EntityNotFoundException("Course not found with id=" + id);
+                });
     }
 
     @Override
@@ -54,13 +57,18 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @Transactional
     public void enrollUserToCourse(String username, Long courseId) {
+        log.info("Запись пользователя {} на курс {}", username, courseId);
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         Course course = getCourseById(courseId);
         user.getEnrolledCourses().add(course);
         userRepository.save(user);
+
+        log.info("Пользователь {} успешно записан на курс {}", username, courseId);
     }
+
 
     @Override
     public boolean isUserEnrolled(String username, Course course) {
@@ -83,6 +91,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void completeSection(String username, Long sectionId) {
+        log.info("Завершение секции {} пользователем {}", sectionId, username);
 
         var user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -91,7 +100,8 @@ public class CourseServiceImpl implements CourseService {
                 .orElseThrow(() -> new RuntimeException("Section not found"));
 
         if (progressRepository.existsByUserAndSection(user, section)) {
-            return; // уже сохранено — не дублируем
+            log.debug("Секция {} уже была завершена пользователем {}", sectionId, username);
+            return;
         }
 
         var progress = UserCourseProgress.builder()
@@ -103,6 +113,7 @@ public class CourseServiceImpl implements CourseService {
                 .build();
 
         progressRepository.save(progress);
+        log.info("Секция {} завершена пользователем {}", sectionId, username);
     }
 
     @Override
