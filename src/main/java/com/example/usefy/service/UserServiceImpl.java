@@ -4,6 +4,7 @@ import com.example.usefy.model.User;
 import com.example.usefy.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.sql.DataSource;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -30,30 +32,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User registerUser(String username, String password, String email) {
+        log.info("Регистрация нового пользователя: {}", username);
 
-        // Проверяем, что логин не занят
         Optional<User> existing = userRepository.findByUsername(username);
         if (existing.isPresent()) {
+            log.warn("Попытка регистрации с существующим username: {}", username);
             throw new IllegalArgumentException("Username already exists");
         }
 
-        // Шифруем пароль
         String hashedPassword = passwordEncoder.encode(password);
 
-        // Создаём сущность
         User user = User.builder()
                 .username(username)
                 .email(email)
                 .passwordHash(hashedPassword)
                 .build();
 
-        // Сохраняем и ВОЗВРАЩАЕМ результат
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        log.info("Пользователь {} успешно зарегистрирован с ID {}", username, saved.getId());
+
+        return saved;
     }
 
     @Override
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username).orElse(null);
+        return userRepository.findByUsername(username)
+                .orElseGet(() -> {
+                    log.debug("Пользователь {} не найден", username);
+                    return null;
+                });
     }
-
 }
