@@ -6,9 +6,12 @@ import com.example.usefy.model.User;
 import com.example.usefy.model.chat.ChatMessage;
 import com.example.usefy.model.chat.ChatSession;
 import com.example.usefy.model.course.Section;
+
 import java.util.List;
 
 public interface ChatService {
+
+    // ============ СУЩЕСТВУЮЩИЕ МЕТОДЫ ============
 
     ChatSession createChat(User user, String title);
 
@@ -24,9 +27,30 @@ public interface ChatService {
 
     ChatSession getOrCreateSectionChat(User user, Section section);
 
-    List<ChatSessionDto> getUserChatSessions(String username);
+    // ============ НОВЫЕ МЕТОДЫ ============
 
+    /**
+     * Создаёт НОВЫЙ чат для секции (второй, третий и т.д.)
+     */
+    ChatSession createNewSectionChat(User user, Long sectionId);
+
+    /**
+     * Возвращает ВСЕ чаты пользователя для конкретной секции
+     */
+    List<ChatSessionDto> getSectionChats(String username, Long sectionId);
+
+    /**
+     * Удаляет чат по ID (с проверкой владельца)
+     */
+    void deleteChatSession(Long sessionId, String username);
+
+    /**
+     * Получает детали чата по ID (с проверкой владельца)
+     */
     ChatSessionDetailDto getChatSessionDetail(Long sessionId, String username);
 
-    void deleteChatSession(Long sessionId, String username); // опционально
+    /**
+     * Возвращает все чаты пользователя (для списка)
+     */
+    List<ChatSessionDto> getUserChatSessions(String username);
 }
