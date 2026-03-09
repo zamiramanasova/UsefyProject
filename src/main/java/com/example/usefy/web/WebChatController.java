@@ -42,11 +42,13 @@ public class WebChatController {
             @AuthenticationPrincipal UserDetails principal,
             Model model
     ) {
-        ChatSessionDetailDto session = chatService.getChatSessionDetail(id, principal.getUsername());
-        model.addAttribute("currentSession", session);
-        model.addAttribute("messages", session.getMessages());
+        // Получаем детали текущего чата
+        ChatSessionDetailDto currentChat = chatService.getChatSessionDetail(id, principal.getUsername());
+        model.addAttribute("currentChat", currentChat);
+        model.addAttribute("messages", currentChat.getMessages());
         model.addAttribute("chatId", id);
 
+        // Получаем список всех чатов для боковой панели
         List<ChatSessionDto> sessions = chatService.getUserChatSessions(principal.getUsername());
         model.addAttribute("sessions", sessions);
 

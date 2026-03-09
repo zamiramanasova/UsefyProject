@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;  // если нужно использовать статусы
 
 @Slf4j
 @Controller
@@ -111,12 +113,17 @@ public class WebCourseController {
     }
 
     @PostMapping("/sections/{sectionId}/complete")
-    public String completeSection(
+    @ResponseBody  // Важно! Добавь эту аннотацию
+    public ResponseEntity<?> completeSection(
             @PathVariable Long sectionId,
             @AuthenticationPrincipal UserDetails principal
     ) {
-        courseService.completeSection(principal.getUsername(), sectionId);
-        return "redirect:/courses/sections/" + sectionId;
+        try {
+            courseService.completeSection(principal.getUsername(), sectionId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }

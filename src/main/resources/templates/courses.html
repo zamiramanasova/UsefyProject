@@ -1,23 +1,32 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Курсы</title>
+<head th:replace="fragments/layout :: head('Курсы')">
 </head>
 <body>
+<div th:replace="fragments/layout :: navbar"></div>
 
-<h1>Доступные курсы</h1>
+<div class="container">
+    <h2 class="mb-4">
+        <i class="bi bi-book me-2"></i>Доступные курсы
+    </h2>
 
-<ul>
-    <li th:each="course : ${courses}">
-        <a th:href="@{/courses/{id}(id=${course.id})}"
-           th:text="${course.title}">
-        </a>
-    </li>
-</ul>
+    <div class="row">
+        <div th:each="course : ${courses}" class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${course.title}">Название курса</h5>
+                    <p class="card-text text-muted" th:text="${course.description}">Описание</p>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                    <a th:href="@{/courses/{id}(id=${course.id})}" class="btn btn-outline-primary">
+                        Перейти к курсу <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<br/>
-<a th:href="@{/profile}">В профиль</a>
-
+<div th:replace="fragments/layout :: scripts"></div>
 </body>
 </html>
