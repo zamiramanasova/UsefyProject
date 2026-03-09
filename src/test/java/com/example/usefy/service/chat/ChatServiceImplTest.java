@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 class ChatServiceImplTest {
 
@@ -178,7 +180,7 @@ class ChatServiceImplTest {
     void deleteChatSession_ShouldDeleteSession() {
         // given
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
-        when(chatSessionRepository.findById(1L)).thenReturn(Optional.of(testSession));
+        when(chatSessionRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.of(testSession));  // ИСПРАВЛЕНО!
 
         // when
         chatService.deleteChatSession(1L, "testuser");
@@ -200,14 +202,20 @@ class ChatServiceImplTest {
         testSession.setUser(anotherUser);
 
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
-        when(chatSessionRepository.findById(1L)).thenReturn(Optional.of(testSession));
+
+        // Мокаем, что чат не найден для этого пользователя
+        when(chatSessionRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.empty());
 
         // when/then
         RuntimeException exception = assertThrows(RuntimeException.class,
                 () -> chatService.deleteChatSession(1L, "testuser")
         );
 
-        assertThat(exception.getMessage()).contains("Access denied");
+        // Проверяем сообщение об ошибке
+        assertThat(exception.getMessage()).contains("Chat session not found");
+
+        // Убеждаемся, что метод delete не вызывался
+        verify(chatSessionRepository, never()).delete(any());
     }
 
     @Test
