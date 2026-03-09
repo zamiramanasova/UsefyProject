@@ -116,14 +116,81 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public ChatSession getOrCreateSectionChat(User user, Section section) {
-        return chatSessionRepository.findByUserAndSection(user, section)
-                .orElseGet(() -> chatSessionRepository.save(
-                        ChatSession.builder()
-                                .user(user)
-                                .section(section)
-                                .title("Чат по уроку " + section.getOrderIndex())
-                                .build()
-                ));
+        // Получаем список всех чатов пользователя для этой секции
+        List<ChatSession> existingChats = chatSessionRepository
+                .findByUserAndSectionOrderByCreatedAtDesc(user, section);
+
+        // Если чаты есть - возвращаем самый новый (первый в списке)
+        if (!existingChats.isEmpty()) {
+            return existingChats.get(0);
+        }
+
+        // Если нет - создаём новый
+        ChatSession newChat = ChatSession.builder()
+                .user(user)
+                .section(section)
+                .title("Чат к уроку " + section.getOrderIndex())
+                .build();
+
+        return chatSessionRepository.save(newChat);
+    }
+
+    @Override
+    @Transactional
+    public ChatSession createNewSectionChat(User user, Long sectionId) {
+        Section section = sectionRepository.findById(sectionId)
+                .orElseThrow(() -> new EntityNotFoundException("Section not found with id: " + sectionId));
+
+        // Подсчитываем, сколько уже чатов у пользователя в этой секции
+        List<ChatSession> existingChats = chatSessionRepository
+                .findByUserAndSectionOrderByCreatedAtDesc(user, section);
+
+        String title = "Чат " + (existingChats.size() + 1);
+
+        ChatSession newChat = ChatSession.builder()
+                .user(user)
+                .section(section)
+                .title(title)
+                .build();
+
+        return chatSessionRepository.save(newChat);
+    }
+
+    @Override
+    public List<ChatSessionDto> getSectionChats(String username, Long sectionId) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));
+
+        Section section = sectionRepository.findById(sectionId)
+                .orElseThrow(() -> new EntityNotFoundException("Section not found with id: " + sectionId));
+
+        List<ChatSession> chats = chatSessionRepository
+                .findByUserAndSectionOrderByCreatedAtDesc(user, section);
+
+        return chats.stream()
+                .map(this::convertToDto)
+                .toList();
+    }
+
+    // Вспомогательный метод для конвертации (можно добавить в конец класса)
+    private ChatSessionDto convertToDto(ChatSession session) {
+        List<ChatMessage> messages = chatMessageRepository
+                .findByChatSessionOrderByCreatedAt(session);
+
+        String lastMessage = messages.isEmpty() ? "" :
+                messages.get(messages.size() - 1).getContent();
+        String preview = lastMessage.length() > 30 ?
+                lastMessage.substring(0, 30) + "..." : lastMessage;
+
+        return new ChatSessionDto(
+                session.getId(),
+                session.getTitle(),
+                session.getCreatedAt(),
+                session.getSection() != null ? session.getSection().getId() : null,
+                "Чат к уроку",
+                messages.size(),
+                preview
+        );
     }
 
     // ============ НОВЫЕ МЕТОДЫ ============
@@ -201,15 +268,10 @@ public class ChatServiceImpl implements ChatService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
 
-        ChatSession session = chatSessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RuntimeException("Chat session not found: " + sessionId));
+        // Используем новый метод репозитория
+        ChatSession session = chatSessionRepository.findByIdAndUser(sessionId, user)
+                .orElseThrow(() -> new RuntimeException("Chat session not found or access denied: " + sessionId));
 
-        // Проверяем, что чат принадлежит пользователю
-        if (!session.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Access denied to chat session: " + sessionId);
-        }
-
-        // Удаляем чат (сообщения удалятся каскадно благодаря orphanRemoval = true)
         chatSessionRepository.delete(session);
     }
 }
