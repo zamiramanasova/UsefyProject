@@ -76,3 +76,5 @@ secrets/
 
 todo.txt                 # у тебя сейчас не добавлен
 application-local.properties  # если создашь локальные настройки
+
+.env
