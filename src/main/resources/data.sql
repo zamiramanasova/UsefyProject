@@ -1,10 +1,28 @@
--- ОЧИЩАЕМ ТАБЛИЦЫ (если нужно)
+-- ===== ОЧИСТКА ТАБЛИЦ В ПРАВИЛЬНОМ ПОРЯДКЕ =====
+-- 1. Сначала удаляем самые зависимые таблицы
+DELETE FROM chat_messages;
+DELETE FROM section_progress;
+DELETE FROM user_course_progress;
+
+-- 2. Потом те, что зависят от секций и юзеров
+DELETE FROM chat_sessions;
+DELETE FROM user_courses;
+
+-- 3. Затем секции (зависят от курсов)
 DELETE FROM sections;
+
+-- 4. Потом курсы
 DELETE FROM courses;
+
+-- 5. И наконец пользователей
+DELETE FROM users_usefy;
 
 -- ===== СБРАСЫВАЕМ СЧЁТЧИКИ ID (для PostgreSQL) =====
 ALTER SEQUENCE courses_id_seq RESTART WITH 1;
 ALTER SEQUENCE sections_id_seq RESTART WITH 1;
+ALTER SEQUENCE users_usefy_id_seq RESTART WITH 1;
+ALTER SEQUENCE chat_sessions_id_seq RESTART WITH 1;
+ALTER SEQUENCE chat_messages_id_seq RESTART WITH 1;
 
 -- ===== COURSES =====
 INSERT INTO courses (title, description) VALUES

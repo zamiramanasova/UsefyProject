@@ -79,6 +79,13 @@ public class WebSectionController {
             }
         }
 
+        // ===== ВАЖНО: ДОБАВЛЯЕМ completed =====
+        boolean completed = courseService.isSectionCompleted(
+                principal.getUsername(),
+                sectionId
+        );
+        model.addAttribute("completed", completed);
+
         model.addAttribute("section", section);
         return "section";
     }
