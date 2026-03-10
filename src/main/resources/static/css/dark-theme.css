@@ -1,0 +1,90 @@
+/* Тёмная тема */
+body {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+.navbar {
+    background-color: #2d2d2d !important;
+}
+
+.navbar-brand {
+    color: #7aa9ff !important;
+}
+
+.nav-link {
+    color: #e0e0e0 !important;
+}
+
+.nav-link:hover {
+    color: #ffffff !important;
+}
+
+.card {
+    background-color: #2d2d2d;
+    border-color: #404040;
+}
+
+.card-header {
+    background-color: #333333 !important;
+    color: #e0e0e0;
+    border-bottom-color: #404040;
+}
+
+.chat-box {
+    background-color: #2d2d2d;
+    border: 1px solid #404040;
+}
+
+.message-user {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.message-ai {
+    background-color: #404040;
+    color: #e0e0e0;
+}
+
+.list-group-item {
+    background-color: #2d2d2d;
+    border-color: #404040;
+    color: #e0e0e0;
+}
+
+.list-group-item:hover {
+    background-color: #3a3a3a;
+    color: #ffffff;
+}
+
+.list-group-item.active {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+}
+
+.text-muted {
+    color: #a0a0a0 !important;
+}
+
+.bg-white {
+    background-color: #2d2d2d !important;
+}
+
+.alert-success {
+    background-color: #1e3a2a;
+    border-color: #2d6a4f;
+    color: #b7e4c7;
+}
+
+.alert-info {
+    background-color: #1e3a4a;
+    border-color: #2d6a8f;
+    color: #b7e0e4;
+}
+
+.alert-danger {
+    background-color: #4a1e1e;
+    border-color: #8f2d2d;
+    color: #e4b7b7;
+}
