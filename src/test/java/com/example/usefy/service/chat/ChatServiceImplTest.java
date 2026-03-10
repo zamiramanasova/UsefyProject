@@ -6,6 +6,8 @@ import com.example.usefy.model.User;
 import com.example.usefy.model.chat.ChatMessage;
 import com.example.usefy.model.chat.ChatSession;
 import com.example.usefy.model.chat.MessageRole;
+import com.example.usefy.model.course.Course;
+import com.example.usefy.model.course.Section;
 import com.example.usefy.repository.UserRepository;
 import com.example.usefy.repository.chat.ChatMessageRepository;
 import com.example.usefy.repository.chat.ChatSessionRepository;
@@ -17,7 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
@@ -46,8 +47,7 @@ class ChatServiceImplTest {
     private SectionRepository sectionRepository;
 
     @Mock
-    @MockBean
-    private AiService aiService;
+    private AiService aiService;  // Это мок, Spring о нём не знает, но это нормально
 
     @InjectMocks
     private ChatServiceImpl chatService;
@@ -55,29 +55,42 @@ class ChatServiceImplTest {
     private User testUser;
     private ChatSession testSession;
     private ChatMessage testMessage;
+    private Section testSection;
+    private Course testCourse;
 
     @BeforeEach
     void setUp() {
-        // Инициализация testUser
+        testCourse = Course.builder()
+                .id(1L)
+                .title("Test Course")
+                .description("Test Description")
+                .build();
+
+        testSection = Section.builder()
+                .id(1L)
+                .content("Test Section Content")
+                .orderIndex(1)
+                .course(testCourse)
+                .build();
+
         testUser = User.builder()
                 .id(1L)
                 .username("testuser")
                 .email("test@test.com")
-                .passwordHash("hashedPassword")
+                .passwordHash("hash")
                 .build();
 
-        // Инициализация testSession
         testSession = ChatSession.builder()
                 .id(1L)
-                .title("Test Chat Session")
+                .title("Test Chat")
                 .user(testUser)
+                .section(testSection)
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        // Инициализация testMessage
         testMessage = ChatMessage.builder()
                 .id(1L)
-                .content("Test message content")
+                .content("Test message")
                 .role(MessageRole.USER)
                 .chatSession(testSession)
                 .createdAt(LocalDateTime.now())
@@ -100,7 +113,7 @@ class ChatServiceImplTest {
         assertThat(result).isNotEmpty();
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo(1L);
-        assertThat(result.get(0).getTitle()).isEqualTo("Test Chat Session");
+        assertThat(result.get(0).getTitle()).isEqualTo("Test Chat");
         assertThat(result.get(0).getMessageCount()).isEqualTo(1);
 
         verify(userRepository).findByUsername("testuser");
@@ -134,10 +147,10 @@ class ChatServiceImplTest {
         // then
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
-        assertThat(result.getTitle()).isEqualTo("Test Chat Session");
+        assertThat(result.getTitle()).isEqualTo("Test Chat");
         assertThat(result.getMessages()).isNotEmpty();
         assertThat(result.getMessages()).hasSize(1);
-        assertThat(result.getMessages().get(0).getContent()).isEqualTo("Test message content");
+        assertThat(result.getMessages().get(0).getContent()).isEqualTo("Test message");
         assertThat(result.getMessages().get(0).getRole()).isEqualTo("USER");
     }
 
@@ -182,7 +195,7 @@ class ChatServiceImplTest {
     void deleteChatSession_ShouldDeleteSession() {
         // given
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
-        when(chatSessionRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.of(testSession));  // ИСПРАВЛЕНО!
+        when(chatSessionRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.of(testSession));
 
         // when
         chatService.deleteChatSession(1L, "testuser");
@@ -204,8 +217,6 @@ class ChatServiceImplTest {
         testSession.setUser(anotherUser);
 
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
-
-        // Мокаем, что чат не найден для этого пользователя
         when(chatSessionRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.empty());
 
         // when/then
@@ -213,10 +224,7 @@ class ChatServiceImplTest {
                 () -> chatService.deleteChatSession(1L, "testuser")
         );
 
-        // Проверяем сообщение об ошибке
         assertThat(exception.getMessage()).contains("Chat session not found");
-
-        // Убеждаемся, что метод delete не вызывался
         verify(chatSessionRepository, never()).delete(any());
     }
 
@@ -246,5 +254,44 @@ class ChatServiceImplTest {
         assertThrows(IllegalArgumentException.class,
                 () -> chatService.addUserMessageAndAiReply(999L, "Hello")
         );
+    }
+
+    @Test
+    void createNewSectionChat_ShouldCreateNewChat() {
+        // given
+        when(sectionRepository.findById(1L)).thenReturn(Optional.of(testSection));
+        when(chatSessionRepository.findByUserAndSectionOrderByCreatedAtDesc(testUser, testSection))
+                .thenReturn(List.of(testSession));
+        when(chatSessionRepository.save(any(ChatSession.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        ChatSession result = chatService.createNewSectionChat(testUser, 1L);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.getTitle()).isEqualTo("Чат 2"); // был один чат, создаём второй
+        assertThat(result.getUser()).isEqualTo(testUser);
+        assertThat(result.getSection()).isEqualTo(testSection);
+
+        verify(chatSessionRepository).save(any(ChatSession.class));
+    }
+
+    @Test
+    void getSectionChats_ShouldReturnList() {
+        // given
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
+        when(sectionRepository.findById(1L)).thenReturn(Optional.of(testSection));
+        when(chatSessionRepository.findByUserAndSectionOrderByCreatedAtDesc(testUser, testSection))
+                .thenReturn(List.of(testSession));
+        when(chatMessageRepository.findByChatSessionOrderByCreatedAt(testSession))
+                .thenReturn(List.of(testMessage));
+
+        // when
+        List<ChatSessionDto> result = chatService.getSectionChats("testuser", 1L);
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getId()).isEqualTo(1L);
     }
 }
