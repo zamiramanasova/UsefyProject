@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -39,7 +40,6 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public void addUserMessageAndAiReply(Long chatId, String userMessage) {
-        // ✅ ВАЖНО: вход в метод
         log.info("Добавление сообщения в чат {}", chatId);
 
         try {
@@ -57,18 +57,18 @@ public class ChatServiceImpl implements ChatService {
                     .build();
             chatMessageRepository.save(userMsg);
 
-            // Получаем контекст
-            List<String> context = chatMessageRepository
-                    .findTop5ByChatSessionOrderByCreatedAtDesc(chat)
+            // ===== ВАЖНО: получаем ВСЮ историю, а не только 5 сообщений =====
+            List<String> fullHistory = chatMessageRepository
+                    .findByChatSessionOrderByCreatedAt(chat)  // все сообщения!
                     .stream()
                     .map(ChatMessage::getContent)
-                    .toList();
+                    .collect(Collectors.toList());
 
             // Получаем текст урока
             String lessonText = chat.getSection() != null ? chat.getSection().getContent() : "";
 
-            // Получаем ответ от AI
-            String aiAnswer = aiService.generateAnswer(userMessage, context, lessonText);
+            // Получаем ответ от AI с полной историей
+            String aiAnswer = aiService.generateAnswer(userMessage, fullHistory, lessonText);
 
             // Сохраняем ответ AI
             ChatMessage aiMsg = ChatMessage.builder()
