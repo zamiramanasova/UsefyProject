@@ -232,8 +232,8 @@ class ChatServiceImplTest {
     void addUserMessageAndAiReply_ShouldSaveMessages() {
         // given
         when(chatSessionRepository.findById(1L)).thenReturn(Optional.of(testSession));
-        when(aiService.generateAnswer(anyString(), anyList(), anyString()))
-                .thenReturn("AI response message");
+        when(aiService.generateAnswer(anyString(), anyList(), anyString(), anyString(), anyString()))
+                .thenReturn("AI response message");  // обновлено!
         when(chatMessageRepository.save(any(ChatMessage.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -242,7 +242,7 @@ class ChatServiceImplTest {
 
         // then
         verify(chatMessageRepository, times(2)).save(any(ChatMessage.class));
-        verify(aiService).generateAnswer(eq("Hello, AI!"), anyList(), anyString());
+        verify(aiService).generateAnswer(eq("Hello, AI!"), anyList(), anyString(), anyString(), anyString());
     }
 
     @Test

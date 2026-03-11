@@ -2,14 +2,10 @@ package com.example.usefy.service.ai;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.prompt.PromptTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -17,51 +13,52 @@ import java.util.Map;
 public class RealAiService implements AiService {
 
     private final ChatClient chatClient;
-    private final Resource systemPromptResource;
 
-    public RealAiService(
-            ChatClient.Builder chatClientBuilder,
-            @Value("classpath:/prompts/system-prompt.st") Resource systemPromptResource
-    ) {
-        this.systemPromptResource = systemPromptResource;
-
-        // Пока инициализируем без системного промпта (добавим в generateAnswer)
-        this.chatClient = chatClientBuilder.build();
+    public RealAiService(ChatClient.Builder chatClientBuilder) {
+        this.chatClient = chatClientBuilder
+                .defaultSystem("""
+                    Ты — опытный преподаватель программирования. 
+                    Отвечай на вопросы, основываясь на материале урока.
+                    Будь дружелюбным, понятным и используй примеры кода, если нужно.
+                    Отвечай на том же языке, на котором задан вопрос.
+                    Важно: Помни весь предыдущий диалог и отвечай с учётом контекста.
+                    """)
+                .build();
     }
 
     @Override
-    public String generateAnswer(String question, List<String> context, String lesson) {
-        log.info("🤖 Запрос к Gemini: {}", question);
+    public String generateAnswer(String question, List<String> context, String lesson,
+                                 String courseTitle, String lessonTitle) {
+        log.info("🤖 Запрос к Gemini по курсу '{}', урок '{}'", courseTitle, lessonTitle);
         log.info("📚 Контекст диалога: {} предыдущих сообщений", context.size());
 
         try {
-            // Определяем название курса и урока (если есть)
-            String courseTitle = extractCourseTitle(lesson);
-            String lessonTitle = extractLessonTitle(lesson);
+            // Формируем промпт с названием курса и урока
+            String systemContext = String.format("""
+                Ты — преподаватель по курсу "%s".
+                Сейчас объясняешь тему: "%s"
+                
+                Материал текущего урока:
+                %s
+                """, courseTitle, lessonTitle, lesson);
 
-            // Загружаем промпт из файла и подставляем параметры
-            PromptTemplate promptTemplate = new PromptTemplate(systemPromptResource);
-            String systemMessage = promptTemplate.render(Map.of(
-                    "courseTitle", courseTitle,
-                    "lessonTitle", lessonTitle,
-                    "lessonContent", lesson
-            ));
-
-            // Формируем историю диалога
+            // История диалога
             String history = context.isEmpty() ? "" :
-                    "История диалога:\n" + String.join("\n---\n", context);
+                    "История нашего разговора:\n" + String.join("\n---\n", context);
 
-            String userPrompt = String.format("""
+            String fullPrompt = String.format("""
+                %s
+                
                 %s
                 
                 Вопрос студента: %s
                 
-                Ответь, учитывая всю историю разговора и правила выше.
-                """, history, question);
+                Ответь, учитывая всю историю разговора. Если вопрос связан с предыдущими ответами, продолжай логично.
+                Будь дружелюбным, но профессиональным.
+                """, systemContext, history, question);
 
             String answer = chatClient.prompt()
-                    .system(systemMessage)
-                    .user(userPrompt)
+                    .user(fullPrompt)
                     .call()
                     .content();
 
@@ -72,26 +69,5 @@ public class RealAiService implements AiService {
             log.error("❌ Ошибка при обращении к Gemini: {}", e.getMessage(), e);
             return "Извините, произошла ошибка при обращении к AI. Попробуйте позже.";
         }
-    }
-
-    /**
-     * Извлекает название курса из текста урока (первые 50 символов)
-     */
-    private String extractCourseTitle(String lesson) {
-        if (lesson == null || lesson.isEmpty()) {
-            return "Программирование";
-        }
-        // Можно улучшить, если передавать из контроллера
-        return "Java";
-    }
-
-    /**
-     * Извлекает название урока из текста (первые 30 символов)
-     */
-    private String extractLessonTitle(String lesson) {
-        if (lesson == null || lesson.isEmpty()) {
-            return "текущий урок";
-        }
-        return lesson.length() > 30 ? lesson.substring(0, 30) + "..." : lesson;
     }
 }

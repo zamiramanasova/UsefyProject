@@ -44,10 +44,7 @@ public class ChatServiceImpl implements ChatService {
 
         try {
             ChatSession chat = chatSessionRepository.findById(chatId)
-                    .orElseThrow(() -> {
-                        log.error("Чат {} не найден", chatId);
-                        return new IllegalArgumentException("Chat not found");
-                    });
+                    .orElseThrow(() -> new IllegalArgumentException("Chat not found"));
 
             // Сохраняем сообщение пользователя
             ChatMessage userMsg = ChatMessage.builder()
@@ -57,18 +54,34 @@ public class ChatServiceImpl implements ChatService {
                     .build();
             chatMessageRepository.save(userMsg);
 
-            // ===== ВАЖНО: получаем ВСЮ историю, а не только 5 сообщений =====
+            // Получаем ВСЮ историю
             List<String> fullHistory = chatMessageRepository
-                    .findByChatSessionOrderByCreatedAt(chat)  // все сообщения!
+                    .findByChatSessionOrderByCreatedAt(chat)
                     .stream()
                     .map(ChatMessage::getContent)
-                    .collect(Collectors.toList());
+                    .toList();
 
-            // Получаем текст урока
-            String lessonText = chat.getSection() != null ? chat.getSection().getContent() : "";
+            // Получаем текст урока и названия
+            String lessonText = "";
+            String courseTitle = "Неизвестный курс";
+            String lessonTitle = "текущий урок";
 
-            // Получаем ответ от AI с полной историей
-            String aiAnswer = aiService.generateAnswer(userMessage, fullHistory, lessonText);
+            if (chat.getSection() != null) {
+                lessonText = chat.getSection().getContent();
+                if (chat.getSection().getCourse() != null) {
+                    courseTitle = chat.getSection().getCourse().getTitle();
+                }
+                lessonTitle = "Урок " + chat.getSection().getOrderIndex();
+            }
+
+            // ВАЖНО: теперь передаём 5 параметров!
+            String aiAnswer = aiService.generateAnswer(
+                    userMessage,
+                    fullHistory,
+                    lessonText,
+                    courseTitle,    // новый параметр
+                    lessonTitle     // новый параметр
+            );
 
             // Сохраняем ответ AI
             ChatMessage aiMsg = ChatMessage.builder()

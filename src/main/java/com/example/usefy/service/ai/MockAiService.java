@@ -9,11 +9,20 @@ import java.util.List;
 public class MockAiService implements AiService {
 
     @Override
-    public String generateAnswer(String question, List<String> context, String lesson) {
+    public String generateAnswer(String question, List<String> context, String lesson,
+                                 String courseTitle, String lessonTitle) {
+        log.info("🤖 Mock AI получил вопрос: {}", question);
+        log.info("📚 Курс: {}, Урок: {}", courseTitle, lessonTitle);
 
-        return "AI ответ по уроку:\n\n"
-                + lesson + "\n\n"
-                + "Вопрос: " + question + "\n"
-                + "Контекст: " + String.join(" | ", context);
+        return String.format("""
+            [MOCK AI] Ответ по курсу "%s", урок "%s":
+            
+            Материал урока: %s
+            
+            На ваш вопрос: "%s"
+            Я бы ответил примерно так...
+            
+            (Это тестовый ответ от Mock AI)
+            """, courseTitle, lessonTitle, lesson, question);
     }
 }
