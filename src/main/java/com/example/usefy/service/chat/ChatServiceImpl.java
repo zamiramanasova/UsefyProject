@@ -302,4 +302,11 @@ public class ChatServiceImpl implements ChatService {
         chatSessionRepository.delete(session);
         log.info("Чат {} удалён", sessionId);
     }
+    @Override
+    public List<ChatMessage> getFullChatHistory(Long chatId) {
+        ChatSession chat = chatSessionRepository.findById(chatId)
+                .orElseThrow(() -> new EntityNotFoundException("Chat not found"));
+
+        return chatMessageRepository.findByChatSessionOrderByCreatedAt(chat);
+    }
 }
