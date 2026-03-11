@@ -53,4 +53,9 @@ public interface ChatService {
      * Возвращает все чаты пользователя (для списка)
      */
     List<ChatSessionDto> getUserChatSessions(String username);
+
+    /**
+    * Получить все сообщения чата для передачи в AI
+     */
+    List<ChatMessage> getFullChatHistory(Long chatId);
 }
