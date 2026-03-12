@@ -168,14 +168,14 @@ https://github.com/zamiramanasova/UsefyProject/actions/workflows/ci.yml/badge.sv
 Этот проект распространяется под лицензией MIT.
 Подробнее: LICENSE
 
-👩‍💻 Автор
-Замира Келдибаева
+## 👩‍💻 Автор
 
-GitHub: @zamiramanasova
-
-LinkedIn: https://www.linkedin.com/in/zamira-%D0%BAeldibaeva-2a7447367/
+**Замира Келдибаева**
+- GitHub: [@zamiramanasova](https://github.com/zamiramanasova)
+- LinkedIn: [@zamira-keldibaeva](https://www.linkedin.com/in/zamira-keldibaeva-2a7447367/)
 
 ⭐ Поддержка
+
 Если проект понравился — поставь звездочку на GitHub!
 Это помогает другим разработчикам найти его.
 
