@@ -140,28 +140,28 @@ https://github.com/zamiramanasova/UsefyProject/actions/workflows/ci.yml/badge.sv
 
 Переключи тёмную тему 🌙 в правом верхнем углу
 
-🏗 Архитектура проекта
+## 🏗 Архитектура проекта
+
 Проект следует классической трёхслойной архитектуре:
 
-text
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   Controller    │────▶│     Service     │────▶│   Repository    │
-│  (Web & REST)   │     │  (Business Logic│     │  (Data Access)  │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-│                       │                        │
-▼                       ▼                        ▼
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   Thymeleaf     │     │   AI Service    │     │    PostgreSQL   │
-│   Templates     │     │  (Gemini API)   │     │     Database    │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-Слои приложения:
-Controller — обработка HTTP-запросов, работа с Thymeleaf и REST API
+**Слои приложения:**
+1. **Controller** — обработка HTTP-запросов, работа с Thymeleaf и REST API
+2. **Service** — бизнес-логика, включая интеграцию с AI
+3. **Repository** — доступ к данным через Spring Data JPA
+4. **Model** — JPA-сущности (User, Course, Section, Chat)
 
-Service — бизнес-логика, включая интеграцию с AI
+**Схема взаимодействия:**
+```
+Клиент (Браузер) → Controller → Service → Repository → Database
+         ↑              ↓           ↓           ↓
+         └────────── Thymeleaf ← AI Service ← PostgreSQL
+```
 
-Repository — доступ к данным через Spring Data JPA
-
-Model — JPA-сущности (User, Course, Section, Chat)
+**Компоненты:**
+- **Frontend:** Thymeleaf шаблоны + Bootstrap
+- **Backend:** Spring Boot (MVC, Security, Data JPA)
+- **AI:** Google Gemini API
+- **Database:** PostgreSQL
 
 📄 Лицензия
 Этот проект распространяется под лицензией MIT.
