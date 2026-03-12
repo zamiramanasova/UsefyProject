@@ -5,7 +5,7 @@
 **LearnLoop** — это веб-приложение для изучения программирования с интегрированным AI-ассистентом.
 Пользователи могут проходить курсы, изучать уроки и задавать вопросы AI, который отвечает на основе материала урока.
 
-🔗 **Живой проект:** [usefyproject-production.up.railway.app](https://usefyproject-production.up.railway.app)
+🔗 **Живой проект:** [learnloop-production-fcae.up.railway.app](https://learnloop-production-fcae.up.railway.app)
 
 ---
 
@@ -71,7 +71,6 @@
    ```bash
    git clone https://github.com/zamiramanasova/LearnLoop.git
    cd LearnLoop
-   ```
 
 2. **Создай базу данных PostgreSQL**
    ```sql
@@ -115,7 +114,7 @@ mvn clean test site
 CI/CD
 GitHub Actions автоматически запускает тесты при каждом пуше в main/master.
 Статус последнего запуска:
-https://github.com/zamiramanasova/UsefyProject/actions/workflows/ci.yml/badge.svg
+https://github.com/zamiramanasova/LearnLoop/actions/workflows/ci.yml/badge.svg
 
 Покрытие тестами
 ✅ Сервисы (ChatService, UserService, CourseService)
@@ -128,7 +127,7 @@ https://github.com/zamiramanasova/UsefyProject/actions/workflows/ci.yml/badge.sv
 
 🌍 Демо
 Проект доступен в интернете по ссылке:
-👉 usefyproject-production.up.railway.app
+https://learnloop-production-fcae.up.railway.app/
 
 Что можно попробовать:
 Зарегистрируйся (или войди с тестовыми данными)
@@ -166,7 +165,7 @@ https://github.com/zamiramanasova/UsefyProject/actions/workflows/ci.yml/badge.sv
 
 📄 Лицензия
 Этот проект распространяется под лицензией MIT.
-Подробнее: LICENSE
+Подробнее: https://license/
 
 ## 👩‍💻 Автор
 
