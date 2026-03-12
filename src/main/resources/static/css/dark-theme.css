@@ -88,3 +88,21 @@ body {
     border-color: #8f2d2d;
     color: #e4b7b7;
 }
+/* ===== ДОБАВЛЕНО ДЛЯ ЛУЧШЕЙ ВИДИМОСТИ ТЕКСТА ===== */
+
+/* Обычный текст в карточках (например, советы, описания) */
+.card-body p:not(.message-user):not(.message-ai) {
+    color: #d0d0d0 !important;  /* Светло-серый, хорошо читается */
+}
+
+/* Заголовки в карточках */
+.card-title,
+.card-subtitle {
+    color: #ffffff !important;  /* Чисто белый для заголовков */
+}
+
+/* Специально для блока "Совет" */
+h6.card-subtitle {
+    color: #7aa9ff !important;  /* Голубоватый, как ссылки */
+    font-weight: 600;
+}
