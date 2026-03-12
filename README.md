@@ -164,6 +164,7 @@ https://learnloop-production-fcae.up.railway.app/
 - **Database:** PostgreSQL
 
 📄 Лицензия
+
 Этот проект распространяется под лицензией MIT.
 Подробнее: https://license/
 
