@@ -1,8 +1,8 @@
 [![Build and Test](https://github.com/zamiramanasova/UsefyProject/actions/workflows/ci.yml/badge.svg)](https://github.com/zamiramanasova/UsefyProject/actions/workflows/ci.yml)
 
-# Usefy — Образовательная платформа с AI-ассистентом
+# LearnLoop — Образовательная платформа с AI-ассистентом
 
-**Usefy** — это веб-приложение для изучения программирования с интегрированным AI-ассистентом.
+**LearnLoop** — это веб-приложение для изучения программирования с интегрированным AI-ассистентом.
 Пользователи могут проходить курсы, изучать уроки и задавать вопросы AI, который отвечает на основе материала урока.
 
 🔗 **Живой проект:** [usefyproject-production.up.railway.app](https://usefyproject-production.up.railway.app)
@@ -69,8 +69,8 @@
 
 1. **Клонируй репозиторий**
    ```bash
-   git clone https://github.com/zamiramanasova/UsefyProject.git
-   cd UsefyProject
+   git clone https://github.com/zamiramanasova/LearnLoop.git
+   cd LearnLoop
    ```
 
 2. **Создай базу данных PostgreSQL**
@@ -171,7 +171,7 @@ https://github.com/zamiramanasova/UsefyProject/actions/workflows/ci.yml/badge.sv
 ## 👩‍💻 Автор
 
 **Замира Келдибаева**
-- GitHub: [@zamiramanasova](https://github.com/zamiramanasova)
+- GitHub: [@zamiramanasova](https://github.com/zamiramanasova/LearnLoop)
 - LinkedIn: [Zamira Keldibaeva]
 
 ⭐ Поддержка
