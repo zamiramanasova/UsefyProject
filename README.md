@@ -71,35 +71,36 @@
    ```bash
    git clone https://github.com/zamiramanasova/UsefyProject.git
    cd UsefyProject
+   ```
 
-Создай базу данных PostgreSQL
+2. **Создай базу данных PostgreSQL**
+   ```sql
+   CREATE DATABASE usefy;
+   ```
 
-sql
-CREATE DATABASE usefy;
-Настрой переменные окружения
-Создай файл .env в корне проекта:
+3. **Настрой переменные окружения**  
+   Создай файл `.env` в корне проекта:
+   ```env
+   DB_URL=jdbc:postgresql://localhost:5432/usefy
+   DB_USERNAME=postgres
+   DB_PASSWORD=твой_пароль
+   GEMINI_API_KEY=твой_ключ_gemini
+   ```
 
-env
-DB_URL=jdbc:postgresql://localhost:5432/usefy
-DB_USERNAME=postgres
-DB_PASSWORD=твой_пароль
-GEMINI_API_KEY=твой_ключ_gemini
-Собери и запусти приложение
+4. **Собери и запусти приложение**
+   ```bash
+   mvn clean install
+   mvn spring-boot:run
+   ```
 
-bash
-mvn clean install
-mvn spring-boot:run
-Открой в браузере
-Перейди по адресу: http://localhost:8080
+5. **Открой в браузере**
+   Перейди по адресу: [http://localhost:8080](http://localhost:8080)
 
-🔑 Где взять API ключ Gemini
-Перейди на makersuite.google.com/app/apikey
-
-Войди в Google аккаунт
-
-Нажми "Create API Key"
-
-Скопируй ключ и добавь в .env
+### 🔑 **Где взять API ключ Gemini**
+1. Перейди на [makersuite.google.com/app/apikey](https://makersuite.google.com/app/apikey)
+2. Войди в Google аккаунт
+3. Нажми **"Create API Key"**
+4. Скопируй ключ и добавь в `.env`
 
 🧪 Тестирование
 Проект покрыт unit-тестами и интеграционными тестами.
