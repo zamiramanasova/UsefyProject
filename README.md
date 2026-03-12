@@ -172,7 +172,7 @@ https://github.com/zamiramanasova/UsefyProject/actions/workflows/ci.yml/badge.sv
 
 GitHub: @zamiramanasova
 
-LinkedIn: [добавь ссылку, если есть]
+LinkedIn: https://www.linkedin.com/in/zamira-%D0%BAeldibaeva-2a7447367/
 
 ⭐ Поддержка
 Если проект понравился — поставь звездочку на GitHub!
