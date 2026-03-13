@@ -141,5 +141,4 @@ public class CourseServiceImpl implements CourseService {
 
         return progressRepository.countByUserAndCourseAndCompletedTrue(user, course);
     }
-
 }
