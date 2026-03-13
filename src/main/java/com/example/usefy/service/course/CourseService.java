@@ -33,6 +33,5 @@ public interface CourseService {
 
     int getCompletedSectionsCount(String username, Long courseId);
 
-
 }
 
