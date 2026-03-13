@@ -187,7 +187,6 @@ public class ChatServiceImpl implements ChatService {
         return saved;
     }
 
-
     @Override
     public List<ChatSessionDto> getSectionChats(String username, Long sectionId) {
         User user = userRepository.findByUsername(username)
