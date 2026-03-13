@@ -27,7 +27,6 @@ public class CourseServiceImpl implements CourseService {
     private final UserRepository userRepository;
     private final UserCourseProgressRepository progressRepository;
 
-
     @Override
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
