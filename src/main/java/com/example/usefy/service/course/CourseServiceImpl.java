@@ -130,7 +130,6 @@ public class CourseServiceImpl implements CourseService {
         return map;
     }
 
-
     @Override
     public int getCompletedSectionsCount(String username, Long courseId) {
 
