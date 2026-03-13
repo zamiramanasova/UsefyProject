@@ -98,7 +98,6 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
-
     @Override
     public ChatSession createChat(User user, String title) {
         ChatSession chat = ChatSession.builder()
