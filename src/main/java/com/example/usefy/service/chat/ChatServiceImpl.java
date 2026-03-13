@@ -294,7 +294,6 @@ public class ChatServiceImpl implements ChatService {
         );
     }
 
-
     @Override
     @Transactional
     public void deleteChatSession(Long sessionId, String username) {
