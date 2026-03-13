@@ -68,7 +68,6 @@ public class CourseServiceImpl implements CourseService {
         log.info("Пользователь {} успешно записан на курс {}", username, courseId);
     }
 
-
     @Override
     public boolean isUserEnrolled(String username, Course course) {
         User user = userRepository.findByUsername(username)
