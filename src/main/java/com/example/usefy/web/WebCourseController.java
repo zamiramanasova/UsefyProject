@@ -78,7 +78,6 @@ public class WebCourseController {
         return "course";
     }
 
-
 //    /**
 //     * 3️⃣ Страница конкретного урока (секции)
 //     * GET /courses/sections/{sectionId}
