@@ -122,5 +122,4 @@ public class WebCourseController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
 }
