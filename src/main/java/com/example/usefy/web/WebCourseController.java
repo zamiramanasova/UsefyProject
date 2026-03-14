@@ -100,7 +100,6 @@ public class WebCourseController {
 //    }
 //
 
-
     @PostMapping("/{id}/enroll")
     public String enrollCourse(
             @PathVariable Long id,
