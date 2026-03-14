@@ -75,7 +75,6 @@ public class WebCourseController {
             model.addAttribute("completedSections", java.util.Map.of());
         }
 
-
         return "course";
     }
 
